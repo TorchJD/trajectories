@@ -20,5 +20,6 @@ check = [
     "pre-commit>=2.9.2"  # isort doesn't work before 2.9.2
 ]
 
-[tool.pdm]
-distribution = false
+[project.scripts]
+optimize = "scripts.optimize:main"
+plot = "scripts.plot:main"

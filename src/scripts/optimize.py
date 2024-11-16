@@ -20,7 +20,7 @@ from torchjd.aggregation import (
     UPGrad,
 )
 
-from src.trajectories.paths import RESULTS_DIR
+from trajectories.paths import RESULTS_DIR
 
 warnings.filterwarnings("ignore")
 
@@ -97,7 +97,3 @@ def fn2(x: Tensor) -> Tensor:
     A2 = torch.tensor([[0.0, 0.0], [0.0, 1.0]])
     u2 = torch.tensor([0.0, 0.0])
     return torch.stack([(x - u1) @ A1 @ (x - u1), (x - u2) @ A2 @ (x - u2)])
-
-
-if __name__ == "__main__":
-    main()

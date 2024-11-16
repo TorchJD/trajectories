@@ -8,7 +8,7 @@ import numpy as np
 from numpy.lib._stride_tricks_impl import sliding_window_view
 from torch import Tensor
 
-from src.trajectories.paths import RESULTS_DIR
+from trajectories.paths import RESULTS_DIR
 
 
 def main():
@@ -87,7 +87,3 @@ def hex_to_rgb(hex_str: str) -> list[int]:
     """#FFFFFF -> [255,255,255]"""
     # Pass 16 to the integer function for change of base
     return [int(hex_str[i : i + 2], 16) for i in range(1, 6, 2)]
-
-
-if __name__ == "__main__":
-    main()

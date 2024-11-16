@@ -13,6 +13,6 @@ pdm run pre-commit install
 
 ## Usage
 ```bash
-./scripts/optimize
-./scripts/plot
+pdm run optimize
+pdm run plot
 ```
