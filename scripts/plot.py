@@ -19,25 +19,34 @@ def main():
     save_dir.mkdir(parents=True, exist_ok=True)
 
     for A, results in aggregator_to_results.items():
-        plot_parameters(results, save_path=save_dir / f"{A}_param_traj.pdf", xlim=(-6, 6), ylim=(-6, 6))
+        plot_parameters(
+            results, save_path=save_dir / f"{A}_param_traj.pdf", xlim=(-6, 6), ylim=(-6, 6)
+        )
 
 
-def plot_parameters(results: list[tuple[list[Tensor], list[Tensor]]], save_path: Path, xlim: tuple[float, float], ylim: tuple[float, float]) -> None:
+def plot_parameters(
+    results: list[tuple[list[Tensor], list[Tensor]]],
+    save_path: Path,
+    xlim: tuple[float, float],
+    ylim: tuple[float, float],
+) -> None:
     fig, ax = plt.subplots(1, figsize=(2.5, 2.5))
 
     ax.axhline(y=0, color="black", linewidth=0.75, alpha=0.5)
     ax.axvline(x=0, color="black", linewidth=0.75, alpha=0.5)
 
-    radiuses = [1., 2.5, 4, 5.5, 7, 8.5]
+    radiuses = [1.0, 2.5, 4, 5.5, 7, 8.5]
     colormap = cm.inferno_r
     norm = mcolors.Normalize(vmin=-1, vmax=max(radiuses))
 
     for radius in radiuses:
         color = colormap(norm(radius))
-        circle = plt.Circle((0, 0), radius, color=color, fill=False, linestyle="--", alpha=0.8, linewidth=1.5)
+        circle = plt.Circle(
+            (0, 0), radius, color=color, fill=False, linestyle="--", alpha=0.8, linewidth=1.5
+        )
         ax.add_patch(circle)
 
-    for (params, _) in results:
+    for params, _ in results:
         x = np.array([param[0] for param in params])
         y = np.array([param[1] for param in params])
         colors = get_color_gradient("#FF0000", "#FFEE00", len(x) - 1)
@@ -67,18 +76,18 @@ def get_color_gradient(c1: str, c2: str, n: int) -> list[str]:
     assert n > 1
     c1_rgb = np.array(hex_to_rgb(c1)) / 255
     c2_rgb = np.array(hex_to_rgb(c2)) / 255
-    mix_pcts = [x/(n-1) for x in range(n)]
-    rgb_colors = [((1-mix)*c1_rgb + (mix*c2_rgb)) for mix in mix_pcts]
-    return ["#" + "".join([format(int(round(val*255)), "02x") for val in item]) for item in rgb_colors]
+    mix_pcts = [x / (n - 1) for x in range(n)]
+    rgb_colors = [((1 - mix) * c1_rgb + (mix * c2_rgb)) for mix in mix_pcts]
+    return [
+        "#" + "".join([format(int(round(val * 255)), "02x") for val in item]) for item in rgb_colors
+    ]
 
 
 def hex_to_rgb(hex_str: str) -> list[int]:
-    """ #FFFFFF -> [255,255,255]"""
+    """#FFFFFF -> [255,255,255]"""
     # Pass 16 to the integer function for change of base
-    return [int(hex_str[i:i+2], 16) for i in range(1, 6, 2)]
+    return [int(hex_str[i : i + 2], 16) for i in range(1, 6, 2)]
 
 
 if __name__ == "__main__":
     main()
-
-
