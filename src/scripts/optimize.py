@@ -1,7 +1,9 @@
 import pickle
+import random
 import warnings
 from typing import Callable
 
+import numpy as np
 import torch
 import torchjd
 from torch import Tensor
@@ -41,6 +43,7 @@ AGGREGATOR_TO_LR = {
 
 
 def main():
+    torch.use_deterministic_algorithms(True)
     RESULTS_DIR.mkdir(exist_ok=True)
 
     aggregator_to_results = {}
@@ -62,6 +65,9 @@ def main():
             if isinstance(A, NashMTL):
                 A.reset()
 
+            torch.manual_seed(0)
+            np.random.seed(0)
+            random.seed(0)
             xs, ys = optimize(fn1, x0=x0, A=A, lr=lr, n_iters=50)
             aggregator_to_results[str(A)].append((xs, ys))
 
