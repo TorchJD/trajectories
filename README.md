@@ -11,6 +11,13 @@ pdm install --frozen-lockfile
 pdm run pre-commit install
 ```
 
+You might also need some tex packages to be able to generate the plots (see
+https://stackoverflow.com/a/53080504)
+
+```bash
+sudo apt-get install texlive-latex-extra texlive-fonts-recommended dvipng cm-super
+```
+
 ## Usage
 ```bash
 pdm run optimize
