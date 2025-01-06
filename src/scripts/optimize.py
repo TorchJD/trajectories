@@ -87,7 +87,7 @@ def optimize(
         y = fn(x)
         ys.append(y.detach().clone())
         optimizer.zero_grad()
-        torchjd.backward(y, [x], A)
+        torchjd.backward(y, aggregator=A)
         optimizer.step()
 
     return xs, ys
