@@ -1,16 +1,13 @@
 import pickle
 import random
 import warnings
-from typing import Callable
 
 import numpy as np
 import torch
-import torchjd
 from torch import Tensor
 from torchjd.aggregation import (
     IMTLG,
     MGDA,
-    Aggregator,
     AlignedMTL,
     CAGrad,
     DualProj,
@@ -22,6 +19,7 @@ from torchjd.aggregation import (
     UPGrad,
 )
 
+from trajectories.optimization import optimize
 from trajectories.paths import RESULTS_DIR
 
 warnings.filterwarnings("ignore")
@@ -40,6 +38,18 @@ AGGREGATOR_TO_LR = {
     Random(): 0.075,
     Mean(): 0.075,
 }
+
+
+def fn1(x: Tensor) -> Tensor:
+    return x**2
+
+
+def fn2(x: Tensor) -> Tensor:
+    A1 = torch.tensor([[4.0, -4.0], [-4.0, 4.0]])
+    u1 = torch.tensor([0.0, 0.0])
+    A2 = torch.tensor([[0.0, 0.0], [0.0, 1.0]])
+    u2 = torch.tensor([0.0, 0.0])
+    return torch.stack([(x - u1) @ A1 @ (x - u1), (x - u2) @ A2 @ (x - u2)])
 
 
 def main():
@@ -73,33 +83,3 @@ def main():
 
     with open(RESULTS_DIR / "results.pkl", "wb") as handle:
         pickle.dump(aggregator_to_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-def optimize(
-    fn: Callable[[Tensor], Tensor], x0: Tensor, A: Aggregator, lr: float, n_iters: int
-) -> tuple[list[Tensor], list[Tensor]]:
-    xs = []
-    ys = []
-    x = x0.clone().requires_grad_()
-    optimizer = torch.optim.SGD([x], lr=lr)
-    for i in range(n_iters):
-        xs.append(x.detach().clone())
-        y = fn(x)
-        ys.append(y.detach().clone())
-        optimizer.zero_grad()
-        torchjd.backward(y, aggregator=A)
-        optimizer.step()
-
-    return xs, ys
-
-
-def fn1(x: Tensor) -> Tensor:
-    return x**2
-
-
-def fn2(x: Tensor) -> Tensor:
-    A1 = torch.tensor([[4.0, -4.0], [-4.0, 4.0]])
-    u1 = torch.tensor([0.0, 0.0])
-    A2 = torch.tensor([[0.0, 0.0], [0.0, 1.0]])
-    u2 = torch.tensor([0.0, 0.0])
-    return torch.stack([(x - u1) @ A1 @ (x - u1), (x - u2) @ A2 @ (x - u2)])
