@@ -5,7 +5,7 @@
 groups = ["default", "check"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:2a7e21b8ffd5dd6a7ffbfa1d1eeaa64c41a100c003ff7bfa9f4425abb8b7ce85"
+content_hash = "sha256:f3cab1c7d37287e2d1d0d9b83783254d1638a857ae0ea0c619ce41515ab6de46"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -95,6 +95,14 @@ summary = ""
 files = [
     {file = "distlib-0.3.9-py2.py3-none-any.whl", hash = "sha256:47f8c22fd27c27e25a65601af709b38e4f0a45ea4fc2e710f65755fa8caaaf87"},
     {file = "distlib-0.3.9.tar.gz", hash = "sha256:a60f20dea646b8a33f3e7772f74dc0b2d0772d2837ee1342a00645c81edf9403"},
+]
+
+[[package]]
+name = "docopt"
+version = "0.6.2"
+summary = ""
+files = [
+    {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
 ]
 
 [[package]]

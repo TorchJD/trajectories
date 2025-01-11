@@ -33,6 +33,8 @@ class QuadraticForm(Objective):
             raise ValueError("As and us must have the same length.")
 
         super().__init__(n_objectives=len(As))
+        # TODO: if A is not positive definite, the objective is not convex. Think about what to do.
+        #  Maybe just use A @ A^T instead of A.
         self.As = As
         self.us = us
 

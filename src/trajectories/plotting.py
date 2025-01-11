@@ -5,11 +5,10 @@ from matplotlib import cm as cm
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from numpy.lib._stride_tricks_impl import sliding_window_view
-from torch import Tensor
 
 
 def plot_parameters(
-    results: list[tuple[list[Tensor], list[Tensor]]],
+    X: np.ndarray,
     save_path: Path,
     xlim: tuple[float, float],
     ylim: tuple[float, float],
@@ -30,7 +29,7 @@ def plot_parameters(
         )
         ax.add_patch(circle)
 
-    for params, _ in results:
+    for params in X:
         x = np.array([param[0] for param in params])
         y = np.array([param[1] for param in params])
         colors = get_color_gradient("#FF0000", "#FFEE00", len(x) - 1)
