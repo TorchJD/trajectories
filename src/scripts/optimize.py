@@ -4,7 +4,6 @@ import warnings
 
 import numpy as np
 import torch
-from torch import Tensor
 from torchjd.aggregation import (
     IMTLG,
     MGDA,
@@ -19,6 +18,7 @@ from torchjd.aggregation import (
     UPGrad,
 )
 
+from trajectories.objectives import ElementWiseQuadratic, QuadraticForm
 from trajectories.optimization import optimize
 from trajectories.paths import RESULTS_DIR
 
@@ -38,18 +38,11 @@ AGGREGATOR_TO_LR_MULTIPLIER = {
     Random(): 1.0,
     Mean(): 1.0,
 }
-
-
-def fn1(x: Tensor) -> Tensor:
-    return x**2
-
-
-def fn2(x: Tensor) -> Tensor:
-    A1 = torch.tensor([[4.0, -4.0], [-4.0, 4.0]])
-    u1 = torch.tensor([0.0, 0.0])
-    A2 = torch.tensor([[0.0, 0.0], [0.0, 1.0]])
-    u2 = torch.tensor([0.0, 0.0])
-    return torch.stack([(x - u1) @ A1 @ (x - u1), (x - u2) @ A2 @ (x - u2)])
+F1 = ElementWiseQuadratic(2)
+F2 = QuadraticForm(
+    As=[4 * torch.tensor([[1.0, -1.0], [-1.0, 4.0]]), torch.tensor([[1.0, -2.0], [1.0, -1.0]])],
+    us=[torch.tensor([1.0, -1.0]), torch.tensor([0.0, 0.0])],
+)
 
 
 def main():
@@ -79,7 +72,7 @@ def main():
             torch.manual_seed(0)
             np.random.seed(0)
             random.seed(0)
-            xs, ys = optimize(fn1, x0=x0, A=A, lr=lr, n_iters=50)
+            xs, ys = optimize(F1, x0=x0, A=A, lr=lr, n_iters=50)
             aggregator_to_results[str(A)].append((xs, ys))
 
     with open(RESULTS_DIR / "results.pkl", "wb") as handle:
