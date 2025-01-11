@@ -33,19 +33,39 @@ class QuadraticForm(Objective):
             raise ValueError("As and us must have the same length.")
 
         super().__init__(n_objectives=len(As))
-        # TODO: if A is not positive definite, the objective is not convex. Think about what to do.
-        #  Maybe just use A @ A^T instead of A.
+        # Note that if A is not PSD, the objective is not guaranteed to be convex (or maybe it's
+        # even guaranteed to not be convex). To force the As to be PSD, use ConvexQuadraticForm.
         self.As = As
         self.us = us
 
     def __call__(self, x: Tensor) -> Tensor:
-        objective_values = [self.quad(x, A, u) for A, u in zip(self.As, self.us)]
+        objective_values = [quad(x, A, u) for A, u in zip(self.As, self.us)]
         return torch.stack(objective_values)
-
-    @staticmethod
-    def quad(x: Tensor, A: Tensor, u: Tensor):
-        x_minus_u = x - u
-        return x_minus_u @ A @ x_minus_u
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(As={self.As}, us={self.us})"
+
+
+class ConvexQuadraticForm(Objective):
+    def __init__(self, Bs: list[Tensor], us: list[Tensor]):
+        if len(Bs) != len(us):
+            raise ValueError("Bs and us must have the same length.")
+
+        super().__init__(n_objectives=len(Bs))
+        self.Bs = Bs
+        self.us = us
+
+        # Precompute As to save computation time.
+        self._As = [B @ B.T for B in self.Bs]
+
+    def __call__(self, x: Tensor) -> Tensor:
+        objective_values = [quad(x, A, u) for A, u in zip(self._As, self.us)]
+        return torch.stack(objective_values)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(Bs={self.Bs}, us={self.us})"
+
+
+def quad(x: Tensor, A: Tensor, u: Tensor):
+    x_minus_u = x - u
+    return x_minus_u @ A @ x_minus_u
