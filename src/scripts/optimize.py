@@ -24,19 +24,19 @@ from trajectories.paths import RESULTS_DIR
 
 warnings.filterwarnings("ignore")
 
-
-AGGREGATOR_TO_LR = {
-    UPGrad(): 0.075,
-    MGDA(): 0.075,
-    CAGrad(c=0.5): 0.075,
-    NashMTL(n_tasks=2): 0.15,
-    GradDrop(): 0.0375,
-    IMTLG(): 0.15,
-    AlignedMTL(): 0.075,
-    DualProj(): 0.075,
-    PCGrad(): 0.0375,
-    Random(): 0.075,
-    Mean(): 0.075,
+BASE_LR = 0.075
+AGGREGATOR_TO_LR_MULTIPLIER = {
+    UPGrad(): 1.0,
+    MGDA(): 1.0,
+    CAGrad(c=0.5): 1.0,
+    NashMTL(n_tasks=2): 2.0,
+    GradDrop(): 0.5,
+    IMTLG(): 2.0,
+    AlignedMTL(): 1.0,
+    DualProj(): 1.0,
+    PCGrad(): 0.5,
+    Random(): 1.0,
+    Mean(): 1.0,
 }
 
 
@@ -67,7 +67,8 @@ def main():
         torch.tensor([-5.0, -1.0]),
     ]
 
-    for A, lr in AGGREGATOR_TO_LR.items():
+    for A, lr_multiplier in AGGREGATOR_TO_LR_MULTIPLIER.items():
+        lr = BASE_LR * lr_multiplier
         print(A)
         aggregator_to_results[str(A)] = []
 
