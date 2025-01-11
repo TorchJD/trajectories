@@ -3,10 +3,11 @@ Optimize the objective using various aggregators. Save the trajectories in the p
 spaces.
 
 Usage:
-  optimize <objective>
+  optimize <objective> <aggregator>...
 
 Arguments:
-  <objective         The key of the objective function.
+  <objective>        The key of the objective function.
+  <aggregator>...    The keys of the aggregators to use.
 
 Options:
   -h --help          Show this screen.
@@ -103,19 +104,11 @@ def main():
     if objective_key not in OBJECTIVES:
         raise ValueError(f"Unknown objective key: {objective_key}")
 
-    aggregator_keys = [
-        "upgrad",
-        "mgda",
-        "cagrad",
-        "nashmtl",
-        "graddrop",
-        "imtl_g",
-        "aligned_mtl",
-        "dualproj",
-        "pcgrad",
-        "random",
-        "mean",
-    ]
+    aggregator_keys = arguments["<aggregator>"]
+    for aggregator_key in aggregator_keys:
+        if aggregator_key not in AGGREGATORS:
+            raise ValueError(f"Unknown aggregator key: {aggregator_key}")
+
     objective = OBJECTIVES[objective_key]
     initial_points = INITIAL_POINTS[objective_key]
     learning_rates = {
