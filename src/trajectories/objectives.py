@@ -16,6 +16,9 @@ class Objective(ABC):
         """Return a string representation of the objective function."""
         return self.__class__.__name__
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.n_objectives})"
+
 
 class ElementWiseQuadratic(Objective):
     def __call__(self, x: Tensor) -> Tensor:
@@ -41,3 +44,6 @@ class QuadraticForm(Objective):
     def quad(x: Tensor, A: Tensor, u: Tensor):
         x_minus_u = x - u
         return x_minus_u @ A @ x_minus_u
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(As={self.As}, us={self.us})"
