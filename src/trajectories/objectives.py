@@ -5,7 +5,8 @@ from torch import Tensor
 
 
 class Objective(ABC):
-    def __init__(self, n_objectives: int):
+    def __init__(self, n_params: int, n_objectives: int):
+        self.n_params = n_params
         self.n_objectives = n_objectives
 
     @abstractmethod
@@ -21,6 +22,9 @@ class Objective(ABC):
 
 
 class ElementWiseQuadratic(Objective):
+    def __init__(self, n_dim: int):
+        super().__init__(n_params=n_dim, n_objectives=n_dim)
+
     def __call__(self, x: Tensor) -> Tensor:
         if len(x) != self.n_objectives:
             raise ValueError("x must have the same length as the number of objectives.")
@@ -32,7 +36,10 @@ class QuadraticForm(Objective):
         if len(As) != len(us):
             raise ValueError("As and us must have the same length.")
 
-        super().__init__(n_objectives=len(As))
+        if len(As) < 1:
+            raise ValueError("As and us must have at least one element.")
+
+        super().__init__(n_params=len(us[0]), n_objectives=len(As))
         # Note that if A is not PSD, the objective is not guaranteed to be convex (or maybe it's
         # even guaranteed to not be convex). To force the As to be PSD, use ConvexQuadraticForm.
         self.As = As
@@ -51,7 +58,10 @@ class ConvexQuadraticForm(Objective):
         if len(Bs) != len(us):
             raise ValueError("Bs and us must have the same length.")
 
-        super().__init__(n_objectives=len(Bs))
+        if len(Bs) < 1:
+            raise ValueError("Bs and us must have at least one element.")
+
+        super().__init__(n_params=len(us[0]), n_objectives=len(Bs))
         self.Bs = Bs
         self.us = us
 
