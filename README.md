@@ -19,7 +19,4 @@ sudo apt-get install texlive-latex-extra texlive-fonts-recommended dvipng cm-sup
 ```
 
 ## Usage
-```bash
-pdm run optimize
-pdm run plot
-```
+Please refer to the docstring of the scripts.
