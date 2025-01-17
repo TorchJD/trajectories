@@ -24,3 +24,4 @@ check = [
 [project.scripts]
 optimize = "scripts.optimize:main"
 plot_params = "scripts.plot_params:main"
+plot_values = "scripts.plot_values:main"

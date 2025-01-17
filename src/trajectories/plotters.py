@@ -7,7 +7,7 @@ from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from numpy.lib._stride_tricks_impl import sliding_window_view
 
-from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic
+from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic, Objective
 from trajectories.pareto_sets import CQFParetoSet, EWQParetoSet, ParetoSet
 
 
@@ -97,11 +97,39 @@ class PathPlotter(MultiPlotter):
         super().__init__(plotters)
 
 
-class ParamTrajPlotter(MultiPlotter):
-    def __init__(self, X: np.ndarray):
-        plotters = [PathPlotter(xs, ys) for xs, ys in zip(X[:, :, 0], X[:, :, 1])]
-        plotters += [InitialPointPlotter(xs[0], ys[0]) for xs, ys in zip(X[:, :, 0], X[:, :, 1])]
+class TrajPlotter(MultiPlotter):
+    def __init__(self, x0s: np.array, x1s: np.array):
+        plotters = [PathPlotter(x0s, x1s), InitialPointPlotter(x0s[0], x1s[0])]
         super().__init__(plotters)
+
+
+class MultiTrajPlotter(MultiPlotter):
+    def __init__(self, M: np.ndarray):
+        plotters = [TrajPlotter(x0s, x1s) for x0s, x1s in zip(M[:, :, 0], M[:, :, 1])]
+        super().__init__(plotters)
+
+
+#
+# class ParamTrajPlotter(MultiPlotter):
+#     def __init__(self, X: np.ndarray):
+#         plotters = [PathPlotter(xs, ys) for xs, ys in zip(X[:, :, 0], X[:, :, 1])]
+#         plotters += [InitialPointPlotter(xs[0], ys[0]) for xs, ys in zip(X[:, :, 0], X[:, :, 1])]
+#         super().__init__(plotters)
+
+
+class ParetoFrontPlotter(Plotter, ABC):
+    def __init__(self, pareto_set: ParetoSet, objective: Objective):
+        self.pareto_set = pareto_set
+        self.objective = objective
+
+
+class LineParetoFrontPlotter(ParetoFrontPlotter):
+    def __call__(self, ax: plt.Axes) -> None:
+        ws_np = np.linspace([0, 1], [1, 0], 100)
+        ws = torch.tensor(ws_np)
+        xs = torch.stack([self.pareto_set(w) for w in ws])
+        ys = torch.stack([self.objective(x) for x in xs])
+        ax.plot(ys[:, 0], ys[:, 1], color="green", linewidth=2.5)
 
 
 class ParetoSetPlotter(Plotter, ABC):
@@ -110,6 +138,7 @@ class ParetoSetPlotter(Plotter, ABC):
 
 
 class LineParetoSetPlotter(ParetoSetPlotter):
+    # TODO: be careful, ws should not necessarily be 2-dimensional
     def __call__(self, ax: plt.Axes) -> None:
         ws_np = np.linspace([0, 1], [1, 0], 100)
         ws = torch.tensor(ws_np)
@@ -123,7 +152,7 @@ class SinglePointParetoSetPlotter(ParetoSetPlotter):
         OptimalPointPlotter(x[0].item(), x[1].item())(ax)
 
 
-class EWQParamTrajPlotter(ParamTrajPlotter):
+class EWQParamTrajPlotter(MultiTrajPlotter):
     def __init__(self, ewq: ElementWiseQuadratic, X: np.ndarray):
         super().__init__(X)
         background_plotters = [AxesPlotter(), ContourCirclesPlotter()]
@@ -132,12 +161,21 @@ class EWQParamTrajPlotter(ParamTrajPlotter):
         )
 
 
-class CQFParamTrajPlotter(ParamTrajPlotter):
+class CQFParamTrajPlotter(MultiTrajPlotter):
     def __init__(self, cqf: ConvexQuadraticForm, X: np.ndarray):
         super().__init__(X)
         background_plotters = [AxesPlotter()]
         self.plotters = (
             background_plotters + [LineParetoSetPlotter(CQFParetoSet(cqf))] + self.plotters
+        )
+
+
+class CQFValueTrajPlotter(MultiTrajPlotter):
+    def __init__(self, cqf: ConvexQuadraticForm, Y: np.ndarray):
+        super().__init__(Y)
+        background_plotters = [AxesPlotter()]
+        self.plotters = (
+            background_plotters + [LineParetoFrontPlotter(CQFParetoSet(cqf), cqf)] + self.plotters
         )
 
 

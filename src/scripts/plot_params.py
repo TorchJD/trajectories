@@ -4,7 +4,7 @@ Usage:
   plot_params <objective>
 
 Arguments:
-  <objective         The key of the objective function.
+  <objective>         The key of the objective function.
 
 Options:
   -h --help          Show this screen.
@@ -18,7 +18,7 @@ from docopt import docopt
 from trajectories.constants import OBJECTIVES
 from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic, Objective
 from trajectories.paths import RESULTS_DIR, get_param_plots_dir, get_params_dir
-from trajectories.plotters import CQFParamTrajPlotter, EWQParamTrajPlotter, ParamTrajPlotter
+from trajectories.plotters import CQFParamTrajPlotter, EWQParamTrajPlotter, Plotter
 
 
 def main():
@@ -52,7 +52,7 @@ def main():
         plt.savefig(save_path, bbox_inches="tight")
 
 
-def build_plotter(objective: Objective, X: np.ndarray) -> ParamTrajPlotter:
+def build_plotter(objective: Objective, X: np.ndarray) -> Plotter:
     if objective.n_params != 2:
         raise ValueError("Only objectives with 2 parameters are supported.")
 
