@@ -84,7 +84,7 @@ class SegmentPlotter(Plotter):
         self.color = color
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.plot(self.xp, self.yp, color=self.color, solid_capstyle="round", linewidth=1.5)
+        ax.plot(self.xp, self.yp, color=self.color, solid_capstyle="round", linewidth=1)
 
 
 class PathPlotter(MultiPlotter):
@@ -114,7 +114,7 @@ class LineParetoSetPlotter(ParetoSetPlotter):
         ws_np = np.linspace([0, 1], [1, 0], 100)
         ws = torch.tensor(ws_np)
         xs = torch.stack([self.pareto_set(w) for w in ws])
-        ax.plot(xs[:, 0], xs[:, 1], color="black", linewidth=1.5)
+        ax.plot(xs[:, 0], xs[:, 1], color="black", linewidth=2.5)
 
 
 class SinglePointParetoSetPlotter(ParetoSetPlotter):
