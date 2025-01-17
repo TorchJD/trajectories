@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+import torch
 from matplotlib import cm as cm
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from numpy.lib._stride_tricks_impl import sliding_window_view
+
+from trajectories.objectives import ConvexQuadraticForm
+from trajectories.pareto_sets import CQFParetoSet, ParetoSet
 
 
 class Plotter(ABC):
@@ -105,6 +109,24 @@ class EWQParamTrajPlotter(ParamTrajPlotter):
         super().__init__(X)
         background_plotters = [AxesPlotter(), ContourCirclesPlotter()]
         self.plotters = background_plotters + self.plotters + [OptimalPointPlotter(0, 0)]
+
+
+class ParetoSetPlotter(Plotter):
+    def __init__(self, pareto_set: ParetoSet):
+        self.pareto_set = pareto_set
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ws_np = np.linspace([0, 1], [1, 0], 100)
+        ws = torch.tensor(ws_np)
+        xs = torch.stack([self.pareto_set(w) for w in ws])
+        ax.plot(xs[:, 0], xs[:, 1], color="black", linewidth=1.5)
+
+
+class CQFParamTrajPlotter(ParamTrajPlotter):
+    def __init__(self, cqf: ConvexQuadraticForm, X: np.ndarray):
+        super().__init__(X)
+        background_plotters = [AxesPlotter()]
+        self.plotters = background_plotters + [ParetoSetPlotter(CQFParetoSet(cqf))] + self.plotters
 
 
 def _get_color_gradient(c1: str, c2: str, n: int) -> list[str]:

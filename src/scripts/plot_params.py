@@ -16,9 +16,9 @@ import numpy as np
 from docopt import docopt
 
 from trajectories.constants import OBJECTIVES
-from trajectories.objectives import ElementWiseQuadratic, Objective
+from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic, Objective
 from trajectories.paths import RESULTS_DIR, get_param_plots_dir, get_params_dir
-from trajectories.plotters import EWQParamTrajPlotter, ParamTrajPlotter
+from trajectories.plotters import CQFParamTrajPlotter, EWQParamTrajPlotter, ParamTrajPlotter
 
 
 def main():
@@ -58,5 +58,7 @@ def build_plotter(objective: Objective, X: np.ndarray) -> ParamTrajPlotter:
 
     if isinstance(objective, ElementWiseQuadratic):
         return EWQParamTrajPlotter(X)
+    elif isinstance(objective, ConvexQuadraticForm):
+        return CQFParamTrajPlotter(objective, X)
     else:
         raise NotImplementedError(f"Objective {objective} is not supported.")
