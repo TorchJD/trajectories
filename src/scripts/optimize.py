@@ -26,6 +26,7 @@ from trajectories.constants import (
     BASE_LEARNING_RATES,
     INITIAL_POINTS,
     LR_MULTIPLIERS,
+    N_ITERS,
     OBJECTIVES,
 )
 from trajectories.optimization import optimize
@@ -50,6 +51,7 @@ def main():
     learning_rates = {
         key: BASE_LEARNING_RATES[objective_key] * mult for key, mult in LR_MULTIPLIERS.items()
     }
+    n_iters = N_ITERS[objective_key]
 
     torch.use_deterministic_algorithms(True)
 
@@ -83,7 +85,7 @@ def main():
             reset_seed()
 
             x0 = torch.tensor(initial_point)
-            xs, ys = optimize(objective, x0=x0, aggregator=aggregator, lr=lr, n_iters=50)
+            xs, ys = optimize(objective, x0=x0, aggregator=aggregator, lr=lr, n_iters=n_iters)
 
             xs_list.append(torch.stack(xs))
             ys_list.append(torch.stack(ys))
