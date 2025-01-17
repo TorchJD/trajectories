@@ -1,7 +1,7 @@
 """
 Plot the trajectories of an objective function in the parameter space.
 Usage:
-  plot <objective>
+  plot_params <objective>
 
 Arguments:
   <objective         The key of the objective function.
