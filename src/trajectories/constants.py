@@ -53,7 +53,7 @@ OBJECTIVES = {
             0.1 * torch.tensor([[1.0, -1.0], [-1.0, 4.0]]),
             torch.tensor([[1.0, -2.0], [1.0, -1.0]]),
         ],
-        us=[torch.tensor([1.0, -1.0]), torch.tensor([0.0, 0.0])],
+        us=[torch.tensor([1.0, -1.0]), torch.tensor([-1.0, -3.0])],
     ),
 }
 BASE_LEARNING_RATES = {
