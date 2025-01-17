@@ -45,8 +45,6 @@ def main():
         save_path = param_plots_dir / f"{aggregator_key}.pdf"
         fig, ax = plt.subplots(1, figsize=(2.5, 2.5))
         plotter(ax)
-        ax.set_xlim((-6, 6))
-        ax.set_ylim((-6, 6))
         ax.set_xlabel("$x$")
         ax.set_ylabel("$y$")
         plt.savefig(save_path, bbox_inches="tight")
