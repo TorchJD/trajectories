@@ -49,8 +49,8 @@ def main():
 
 
 def build_plotter(objective: Objective, Y: np.ndarray) -> Plotter:
-    if objective.n_objectives != 2:
-        raise ValueError("Only objectives with 2 dimensions are supported.")
+    if objective.n_values != 2:
+        raise ValueError("Only objectives with 2 values are supported.")
 
     if isinstance(objective, ConvexQuadraticForm):
         return CQFValueTrajPlotter(objective, Y)

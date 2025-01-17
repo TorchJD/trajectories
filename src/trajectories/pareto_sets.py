@@ -29,4 +29,4 @@ class EWQParetoSet(ParetoSet):
         self.ewq = ewq
 
     def __call__(self, w: Tensor) -> Tensor:
-        return torch.zeros(self.ewq.n_objectives)
+        return torch.zeros(self.ewq.n_values)
