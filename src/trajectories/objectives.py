@@ -66,10 +66,10 @@ class ConvexQuadraticForm(Objective):
         self.us = us
 
         # Precompute As to save computation time.
-        self._As = [B @ B.T for B in self.Bs]
+        self.As = [B @ B.T for B in self.Bs]
 
     def __call__(self, x: Tensor) -> Tensor:
-        objective_values = [quad(x, A, u) for A, u in zip(self._As, self.us)]
+        objective_values = [quad(x, A, u) for A, u in zip(self.As, self.us)]
         return torch.stack(objective_values)
 
     def __repr__(self) -> str:
