@@ -13,6 +13,13 @@ class Objective(ABC):
     def __call__(self, x: Tensor) -> Tensor:
         """Compute the value of the objective function at x. It has to be a vector."""
 
+    @abstractmethod
+    def jacobian(self, x: Tensor) -> Tensor:
+        """
+        Compute the value of the Jacobian of the objective function at x. It is a matrix of shape
+        [n_values, n_params].
+        """
+
     def __str__(self) -> str:
         """Return a string representation of the objective function."""
         return self.__class__.__name__
@@ -29,6 +36,9 @@ class ElementWiseQuadratic(Objective):
         if len(x) != self.n_values:
             raise ValueError("x must have the same length as the number of values.")
         return x**2
+
+    def jacobian(self, x: Tensor) -> Tensor:
+        return torch.diagonal(torch.stack([2 * x[0], 2 * x[1]]))
 
 
 class QuadraticForm(Objective):
@@ -48,6 +58,9 @@ class QuadraticForm(Objective):
     def __call__(self, x: Tensor) -> Tensor:
         objective_values = [quad(x, A, u) for A, u in zip(self.As, self.us)]
         return torch.stack(objective_values)
+
+    def jacobian(self, x: Tensor) -> Tensor:
+        return torch.vstack([2 * (x - u) @ A for A, u in zip(self.As, self.us)])
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(As={self.As}, us={self.us})"
@@ -71,6 +84,9 @@ class ConvexQuadraticForm(Objective):
     def __call__(self, x: Tensor) -> Tensor:
         objective_values = [quad(x, A, u) for A, u in zip(self.As, self.us)]
         return torch.stack(objective_values)
+
+    def jacobian(self, x: Tensor) -> Tensor:
+        return torch.vstack([2 * (x - u) @ A for A, u in zip(self.As, self.us)])
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(Bs={self.Bs}, us={self.us})"
