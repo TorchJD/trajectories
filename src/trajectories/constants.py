@@ -29,17 +29,17 @@ AGGREGATORS = {
     "mean": Mean(),
 }
 LR_MULTIPLIERS = {
-    "upgrad": 0.4,
+    "upgrad": 1.0,
     "mgda": 1.0,
     "cagrad": 1.0,
     "nashmtl": 2.0,
     "graddrop": 0.5,
-    "imtl_g": 0.2,
+    "imtl_g": 2.0,
     "aligned_mtl": 1.0,
     "dualproj": 1.0,
     "pcgrad": 0.5,
     "random": 1.0,
-    "mean": 0.4,
+    "mean": 1.0,
 }
 
 OBJECTIVES = {
