@@ -37,12 +37,11 @@ def main():
     # by ICML.
     plt.rcParams.update({"text.usetex": True})
     objective = OBJECTIVES[metadata["objective_key"]]
-    plotter_cls = objective_to_params_plotter_class(objective)
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_X = {key: np.load(params_dir / f"{key}.npy") for key in aggregator_keys}
 
     for aggregator_key, X in aggregator_to_X.items():
-        plotter = plotter_cls(X)
+        plotter = build_plotter(objective, X)
         save_path = param_plots_dir / f"{aggregator_key}.pdf"
         fig, ax = plt.subplots(1, figsize=(2.5, 2.5))
         plotter(ax)
@@ -53,11 +52,11 @@ def main():
         plt.savefig(save_path, bbox_inches="tight")
 
 
-def objective_to_params_plotter_class(objective: Objective) -> type[ParamTrajPlotter]:
+def build_plotter(objective: Objective, X: np.ndarray) -> ParamTrajPlotter:
     if objective.n_params != 2:
         raise ValueError("Only objectives with 2 parameters are supported.")
 
     if isinstance(objective, ElementWiseQuadratic):
-        return EWQParamTrajPlotter
+        return EWQParamTrajPlotter(X)
     else:
         raise NotImplementedError(f"Objective {objective} is not supported.")
