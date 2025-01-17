@@ -55,11 +55,19 @@ OBJECTIVES = {
         ],
         us=[torch.tensor([1.0, -1.0]), torch.tensor([-1.0, -3.0])],
     ),
+    "CQF_v2": ConvexQuadraticForm(
+        Bs=[
+            4 * torch.tensor([[2.0, 1.0], [1.0, 2.0]]),
+            torch.tensor([[2.0, 1.0], [1.0, -2.0]]),
+        ],
+        us=[torch.tensor([1.0, 0.0]), torch.tensor([0.0, 1.0])],
+    ),
 }
 BASE_LEARNING_RATES = {
     "EWQ-2": 0.075,
     "QF_v1": 0.01,
     "CQF_v1": 0.1,
+    "CQF_v2": 0.002,
 }
 INITIAL_POINTS = {
     "EWQ-2": [
@@ -86,9 +94,19 @@ INITIAL_POINTS = {
         [1.0, 5.0],
         [-5.0, -1.0],
     ],
+    "CQF_v2": [
+        [0.3, -0.2],
+        [1.0, -1.0],
+        [0.0, -0.3],
+        [-0.4, 0.4],
+        [-0.3, 0.4],
+        [0.1, 0.5],
+        [-0.5, -0.1],
+    ],
 }
 N_ITERS = {
     "EWQ-2": 50,
     "QF_v1": 100,
     "CQF_v1": 200,
+    "CQF_v2": 500,
 }
