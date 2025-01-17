@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import torch
 from torch import Tensor
 
-from trajectories.objectives import ConvexQuadraticForm
+from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic
 
 
 class ParetoSet(ABC):
@@ -22,3 +22,11 @@ class CQFParetoSet(ParetoSet):
             [w_i * A_i @ u_i for w_i, A_i, u_i in zip(w, self.cqf.As, self.cqf.us)]
         ).sum(dim=0)
         return torch.linalg.lstsq(G, b).solution
+
+
+class EWQParetoSet(ParetoSet):
+    def __init__(self, ewq: ElementWiseQuadratic):
+        self.ewq = ewq
+
+    def __call__(self, w: Tensor) -> Tensor:
+        return torch.zeros(self.ewq.n_objectives)

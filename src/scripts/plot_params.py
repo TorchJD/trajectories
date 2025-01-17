@@ -57,7 +57,7 @@ def build_plotter(objective: Objective, X: np.ndarray) -> ParamTrajPlotter:
         raise ValueError("Only objectives with 2 parameters are supported.")
 
     if isinstance(objective, ElementWiseQuadratic):
-        return EWQParamTrajPlotter(X)
+        return EWQParamTrajPlotter(objective, X)
     elif isinstance(objective, ConvexQuadraticForm):
         return CQFParamTrajPlotter(objective, X)
     else:

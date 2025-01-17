@@ -7,8 +7,8 @@ from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from numpy.lib._stride_tricks_impl import sliding_window_view
 
-from trajectories.objectives import ConvexQuadraticForm
-from trajectories.pareto_sets import CQFParetoSet, ParetoSet
+from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic
+from trajectories.pareto_sets import CQFParetoSet, EWQParetoSet, ParetoSet
 
 
 class Plotter(ABC):
@@ -104,17 +104,12 @@ class ParamTrajPlotter(MultiPlotter):
         super().__init__(plotters)
 
 
-class EWQParamTrajPlotter(ParamTrajPlotter):
-    def __init__(self, X: np.ndarray):
-        super().__init__(X)
-        background_plotters = [AxesPlotter(), ContourCirclesPlotter()]
-        self.plotters = background_plotters + self.plotters + [OptimalPointPlotter(0, 0)]
-
-
-class ParetoSetPlotter(Plotter):
+class ParetoSetPlotter(Plotter, ABC):
     def __init__(self, pareto_set: ParetoSet):
         self.pareto_set = pareto_set
 
+
+class LineParetoSetPlotter(ParetoSetPlotter):
     def __call__(self, ax: plt.Axes) -> None:
         ws_np = np.linspace([0, 1], [1, 0], 100)
         ws = torch.tensor(ws_np)
@@ -122,11 +117,28 @@ class ParetoSetPlotter(Plotter):
         ax.plot(xs[:, 0], xs[:, 1], color="black", linewidth=1.5)
 
 
+class SinglePointParetoSetPlotter(ParetoSetPlotter):
+    def __call__(self, ax: plt.Axes) -> None:
+        x = self.pareto_set(torch.tensor([0.5, 0.5]))
+        OptimalPointPlotter(x[0].item(), x[1].item())(ax)
+
+
+class EWQParamTrajPlotter(ParamTrajPlotter):
+    def __init__(self, ewq: ElementWiseQuadratic, X: np.ndarray):
+        super().__init__(X)
+        background_plotters = [AxesPlotter(), ContourCirclesPlotter()]
+        self.plotters = (
+            background_plotters + self.plotters + [SinglePointParetoSetPlotter(EWQParetoSet(ewq))]
+        )
+
+
 class CQFParamTrajPlotter(ParamTrajPlotter):
     def __init__(self, cqf: ConvexQuadraticForm, X: np.ndarray):
         super().__init__(X)
         background_plotters = [AxesPlotter()]
-        self.plotters = background_plotters + [ParetoSetPlotter(CQFParetoSet(cqf))] + self.plotters
+        self.plotters = (
+            background_plotters + [LineParetoSetPlotter(CQFParetoSet(cqf))] + self.plotters
+        )
 
 
 def _get_color_gradient(c1: str, c2: str, n: int) -> list[str]:
