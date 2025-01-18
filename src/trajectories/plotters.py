@@ -2,13 +2,15 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 from matplotlib import cm as cm
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from numpy.lib._stride_tricks_impl import sliding_window_view
+from torch import Tensor
 
 from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic, Objective
-from trajectories.pareto_sets import CQFParetoSet, EWQParetoSet, ParetoSet
+from trajectories.pareto_sets import CQF_SPSS, EWQ_SPSS, StrongParetoStationarySet
 
 
 class Plotter(ABC):
@@ -110,14 +112,15 @@ class MultiTrajPlotter(MultiPlotter):
 
 
 class ParetoFrontPlotter(Plotter, ABC):
-    def __init__(self, pareto_set: ParetoSet, objective: Objective):
+    def __init__(self, pareto_set: StrongParetoStationarySet, objective: Objective):
         self.pareto_set = pareto_set
         self.objective = objective
 
 
 class LineParetoFrontPlotter(ParetoFrontPlotter):
     def __call__(self, ax: plt.Axes) -> None:
-        ws_np = np.linspace([0, 1], [1, 0], 100)
+        eps = 1e-05
+        ws_np = np.linspace([0 + eps, 1 - eps], [1 - eps, 0 + eps], 100)
         ws = torch.tensor(ws_np)
         xs = torch.stack([self.pareto_set(w) for w in ws])
         ys = torch.stack([self.objective(x) for x in xs])
@@ -125,14 +128,15 @@ class LineParetoFrontPlotter(ParetoFrontPlotter):
 
 
 class ParetoSetPlotter(Plotter, ABC):
-    def __init__(self, pareto_set: ParetoSet):
+    def __init__(self, pareto_set: StrongParetoStationarySet):
         self.pareto_set = pareto_set
 
 
 class LineParetoSetPlotter(ParetoSetPlotter):
     # TODO: be careful, ws should not necessarily be 2-dimensional
     def __call__(self, ax: plt.Axes) -> None:
-        ws_np = np.linspace([0, 1], [1, 0], 100)
+        eps = 1e-05
+        ws_np = np.linspace([0 + eps, 1 - eps], [1 - eps, 0 + eps], 100)
         ws = torch.tensor(ws_np)
         xs = torch.stack([self.pareto_set(w) for w in ws])
         ax.plot(xs[:, 0], xs[:, 1], color="black", linewidth=2.5)
@@ -149,17 +153,20 @@ class EWQParamTrajPlotter(MultiTrajPlotter):
         super().__init__(X)
         background_plotters = [AxesPlotter(), ContourCirclesPlotter()]
         self.plotters = (
-            background_plotters + self.plotters + [SinglePointParetoSetPlotter(EWQParetoSet(ewq))]
+            background_plotters + self.plotters + [SinglePointParetoSetPlotter(EWQ_SPSS(ewq))]
         )
 
 
 class CQFParamTrajPlotter(MultiTrajPlotter):
     def __init__(self, cqf: ConvexQuadraticForm, X: np.ndarray):
         super().__init__(X)
-        background_plotters = [AxesPlotter()]
-        self.plotters = (
-            background_plotters + [LineParetoSetPlotter(CQFParetoSet(cqf))] + self.plotters
-        )
+        background_plotters = [
+            AxesPlotter(),
+            GradientCosineSimilarityHeatmap(
+                cqf, X[:, :, 0].min(), X[:, :, 0].max(), X[:, :, 1].min(), X[:, :, 1].max()
+            ),
+        ]
+        self.plotters = background_plotters + [LineParetoSetPlotter(CQF_SPSS(cqf))] + self.plotters
 
 
 class CQFValueTrajPlotter(MultiTrajPlotter):
@@ -167,7 +174,56 @@ class CQFValueTrajPlotter(MultiTrajPlotter):
         super().__init__(Y)
         background_plotters = [AxesPlotter()]
         self.plotters = (
-            background_plotters + [LineParetoFrontPlotter(CQFParetoSet(cqf), cqf)] + self.plotters
+            background_plotters + [LineParetoFrontPlotter(CQF_SPSS(cqf), cqf)] + self.plotters
+        )
+
+
+class GradientCosineSimilarityHeatmap(Plotter):
+    def __init__(
+        self, objective: Objective, x0_min: float, x0_max: float, x1_min: float, x1_max: float
+    ):
+        if objective.n_values != 2:
+            raise ValueError("Objective should have 2 values.")
+
+        self.objective = objective
+        n = 200
+
+        x0_len = x0_max - x0_min
+        x0_start = x0_min + x0_len / (n * 2)
+        x0_end = x0_max - x0_len / (n * 2)
+
+        x1_len = x1_max - x1_min
+        x1_start = x1_min + x1_len / (n * 2)
+        x1_end = x1_max - x1_len / (n * 2)
+
+        x0s = np.linspace(x0_start, x0_end, n)
+        x1s = np.linspace(x1_start, x1_end, n)
+
+        similarities = torch.zeros(n, n)
+        for i, x0 in enumerate(x0s):
+            for j, x1 in enumerate(x1s):
+                x = torch.tensor([x0, x1])
+                similarities[i][j] = self.compute_cosine_similarity(x)
+
+        self.similarities = similarities.numpy()
+        self.x0_min = x0_min
+        self.x0_max = x0_max
+        self.x1_min = x1_min
+        self.x1_max = x1_max
+
+    def compute_cosine_similarity(self, x: Tensor):
+        J = self.objective.jacobian(x)
+        return F.cosine_similarity(J[0].unsqueeze(0), J[1].unsqueeze(0), eps=1e-19).squeeze()
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.imshow(
+            self.similarities.T,
+            origin="lower",
+            cmap="PRGn",
+            aspect="auto",
+            vmin=-1,
+            vmax=1,
+            extent=(self.x0_min, self.x0_max, self.x1_min, self.x1_max),
         )
 
 
