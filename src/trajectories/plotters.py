@@ -109,14 +109,6 @@ class MultiTrajPlotter(MultiPlotter):
         super().__init__(plotters)
 
 
-#
-# class ParamTrajPlotter(MultiPlotter):
-#     def __init__(self, X: np.ndarray):
-#         plotters = [PathPlotter(xs, ys) for xs, ys in zip(X[:, :, 0], X[:, :, 1])]
-#         plotters += [InitialPointPlotter(xs[0], ys[0]) for xs, ys in zip(X[:, :, 0], X[:, :, 1])]
-#         super().__init__(plotters)
-
-
 class ParetoFrontPlotter(Plotter, ABC):
     def __init__(self, pareto_set: ParetoSet, objective: Objective):
         self.pareto_set = pareto_set
