@@ -76,4 +76,4 @@ class ElementWiseQuadratic(Objective):
         return x**2
 
     def jacobian(self, x: Tensor) -> Tensor:
-        return torch.diagonal(torch.stack([2 * x[0], 2 * x[1]]))
+        return torch.diag(torch.stack([2 * x[0], 2 * x[1]]))
