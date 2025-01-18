@@ -13,12 +13,13 @@ import json
 
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 from docopt import docopt
 
-from trajectories.constants import OBJECTIVES
-from trajectories.objectives import ConvexQuadraticForm, Objective
+from trajectories.constants import N_SAMPLES_SPSM, OBJECTIVES
+from trajectories.objectives import WithSPSMappingMixin
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
-from trajectories.plotters import CQFValueTrajPlotter, Plotter
+from trajectories.plotters import AxesPlotter, MultiPlotter, MultiTrajPlotter, PFPlotter
 
 
 def main():
@@ -36,23 +37,22 @@ def main():
     # This seems to be the only way to make the font be Type1, which is the only font type supported
     # by ICML.
     plt.rcParams.update({"text.usetex": True})
-    objective = OBJECTIVES[metadata["objective_key"]]
+    objective_key = metadata["objective_key"]
+    objective = OBJECTIVES[objective_key]
+    n_samples_spsm = N_SAMPLES_SPSM[objective_key]
+    common_plotters = [AxesPlotter()]
+
+    if isinstance(objective, WithSPSMappingMixin):
+        sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
+        pf_points = torch.stack([objective(x) for x in sps_points]).numpy()
+        common_plotters.append(PFPlotter(pf_points))
+
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
 
     for aggregator_key, Y in aggregator_to_Y.items():
-        plotter = build_plotter(objective, Y)
         save_path = value_plots_dir / f"{aggregator_key}.pdf"
         fig, ax = plt.subplots(1, figsize=(2.5, 2.5))
+        plotter = MultiPlotter([*common_plotters, MultiTrajPlotter(Y)])
         plotter(ax)
         plt.savefig(save_path, bbox_inches="tight")
-
-
-def build_plotter(objective: Objective, Y: np.ndarray) -> Plotter:
-    if objective.n_values != 2:
-        raise ValueError("Only objectives with 2 values are supported.")
-
-    if isinstance(objective, ConvexQuadraticForm):
-        return CQFValueTrajPlotter(objective, Y)
-    else:
-        raise NotImplementedError(f"Objective {objective} is not supported.")

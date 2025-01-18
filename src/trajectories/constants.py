@@ -132,3 +132,10 @@ N_ITERS = {
     "CQF_v2": 500,
     "CQF_v3": 3500,
 }
+N_SAMPLES_SPSM = {
+    "EWQ-2": 1,
+    "QF_v1": 100,
+    "CQF_v1": 100,
+    "CQF_v2": 100,
+    "CQF_v3": 100,
+}
