@@ -81,7 +81,7 @@ BASE_LEARNING_RATES = {
     "QF_v1": 0.01,
     "CQF_v1": 0.1,
     "CQF_v2": 0.002,
-    "CQF_v3": 0.02,
+    "CQF_v3": 0.1,
 }
 INITIAL_POINTS = {
     "EWQ-2": [
@@ -135,7 +135,7 @@ N_ITERS = {
     "QF_v1": 100,
     "CQF_v1": 200,
     "CQF_v2": 500,
-    "CQF_v3": 3500,
+    "CQF_v3": 1000,
 }
 N_SAMPLES_SPSM = {
     "EWQ-2": 1,
