@@ -41,7 +41,7 @@ class InitialPointPlotter(PointPlotter):
     """PointPlotter that can draw the initial point."""
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.scatter(self.x, self.y, color="black", s=30)
+        ax.scatter(self.x, self.y, color="black", s=10)
 
 
 class OptimalPointPlotter(PointPlotter):
