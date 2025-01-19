@@ -86,10 +86,10 @@ def main():
         )
         heatmap_plotter = HeatmapPlotter(
             values=similarities.numpy(),
-            x0_min=xlim[0],
-            x0_max=xlim[1],
-            x1_min=ylim[0],
-            x1_max=ylim[1],
+            x_min=xlim[0],
+            x_max=xlim[1],
+            y_min=ylim[0],
+            y_max=ylim[1],
         )
         common_plotters.append(heatmap_plotter)
 

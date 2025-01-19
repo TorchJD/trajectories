@@ -129,11 +129,11 @@ class SegmentPlotter(Plotter):
 class PathPlotter(MultiPlotter):
     """Plotter that can draw a path of segments with colors varying along a gradient."""
 
-    def __init__(self, xs: np.ndarray, ys: np.ndarray):
-        x_view = sliding_window_view(xs, window_shape=2)
-        y_view = sliding_window_view(ys, window_shape=2)
+    def __init__(self, points: np.ndarray):
+        x_view = sliding_window_view(points[:, 0], window_shape=2)
+        y_view = sliding_window_view(points[:, 1], window_shape=2)
 
-        colors = PathPlotter._get_color_gradient("#FF0000", "#FFEE00", len(xs) - 1)
+        colors = PathPlotter._get_color_gradient("#FF0000", "#FFEE00", len(points) - 1)
         plotters = [SegmentPlotter(xp, yp, color) for xp, yp, color in zip(x_view, y_view, colors)]
         super().__init__(plotters)
 
@@ -161,16 +161,16 @@ class PathPlotter(MultiPlotter):
 class TrajPlotter(MultiPlotter):
     """Plotter that can draw a trajectory: initial point + path."""
 
-    def __init__(self, x0s: np.array, x1s: np.array):
-        plotters = [PathPlotter(x0s, x1s), InitialPointPlotter(x0s[0], x1s[0])]
+    def __init__(self, points: np.array):
+        plotters = [PathPlotter(points), InitialPointPlotter(points[0, 0], points[0, 1])]
         super().__init__(plotters)
 
 
 class MultiTrajPlotter(MultiPlotter):
     """Plotter that can draw several trajectories (one for each initial point)."""
 
-    def __init__(self, M: np.ndarray):
-        plotters = [TrajPlotter(x0s, x1s) for x0s, x1s in zip(M[:, :, 0], M[:, :, 1])]
+    def __init__(self, points_matrix: np.ndarray):
+        plotters = [TrajPlotter(points) for points in points_matrix]
         super().__init__(plotters)
 
 
@@ -216,14 +216,12 @@ class HeatmapPlotter(Plotter):
     coordinates.
     """
 
-    def __init__(
-        self, values: np.ndarray, x0_min: float, x0_max: float, x1_min: float, x1_max: float
-    ):
+    def __init__(self, values: np.ndarray, x_min: float, x_max: float, y_min: float, y_max: float):
         self.values = values
-        self.x0_min = x0_min
-        self.x0_max = x0_max
-        self.x1_min = x1_min
-        self.x1_max = x1_max
+        self.x_min = x_min
+        self.x_max = x_max
+        self.y_min = y_min
+        self.y_max = y_max
 
     def __call__(self, ax: plt.Axes) -> None:
         ax.imshow(
@@ -233,5 +231,5 @@ class HeatmapPlotter(Plotter):
             aspect="auto",
             vmin=-1,
             vmax=1,
-            extent=(self.x0_min, self.x0_max, self.x1_min, self.x1_max),
+            extent=(self.x_min, self.x_max, self.y_min, self.y_max),
         )
