@@ -207,10 +207,10 @@ class SPSPlotter(SetPlotter):
 
 
 class PFPlotter(SetPlotter):
-    """Plotter that can represent the Pareto front: green SetPlotter"""
+    """Plotter that can represent the Pareto front: black SetPlotter"""
 
     def __init__(self, pf_points: np.ndarray):
-        super().__init__(points=pf_points, color="green")
+        super().__init__(points=pf_points, color="black")
 
 
 class HeatmapPlotter(Plotter):
