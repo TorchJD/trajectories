@@ -39,6 +39,10 @@ def main():
     plt.rcParams.update({"text.usetex": True})
     objective_key = metadata["objective_key"]
     objective = OBJECTIVES[objective_key]
+
+    if objective.n_values != 2:
+        raise ValueError("Can only plot values trajectories for objectives with 2 values.")
+
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
     common_plotters = [AxesPlotter()]
 

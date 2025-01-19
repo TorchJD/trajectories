@@ -48,6 +48,10 @@ def main():
     plt.rcParams.update({"text.usetex": True})
     objective_key = metadata["objective_key"]
     objective = OBJECTIVES[objective_key]
+
+    if objective.n_params != 2:
+        raise ValueError("Can only plot param trajectories for objectives with 2 params.")
+
     initial_points = INITIAL_POINTS[objective_key]
     initial_points = np.stack([np.array(point) for point in initial_points])
     main_content = initial_points  # The content to which the axes must be adjusted
