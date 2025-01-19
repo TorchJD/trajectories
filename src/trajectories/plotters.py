@@ -14,6 +14,9 @@ class Plotter(ABC):
     def __call__(self, ax: plt.Axes) -> None:
         pass
 
+    def __add__(self, other: "Plotter") -> "Plotter":
+        return MultiPlotter([self, other])
+
 
 class MultiPlotter(Plotter):
     """Plotter applying several plotters."""
@@ -233,3 +236,32 @@ class HeatmapPlotter(Plotter):
             vmax=1,
             extent=(self.x_min, self.x_max, self.y_min, self.y_max),
         )
+
+
+class AdjustPlotter(Plotter):
+    """Plotter that adjusts the xlim and ylim of the plot to the coordinates of the content."""
+
+    def __init__(self, content: np.ndarray):
+        x_min, y_min = content.min(axis=0)
+        x_max, y_max = content.max(axis=0)
+        x_range = x_max - x_min
+        y_range = y_max - y_min
+        margin = 0.05
+        self.xlim = [x_min - margin * x_range, x_max + margin * x_range]
+        self.ylim = [y_min - margin * y_range, y_max + margin * y_range]
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.set_xlim(self.xlim)
+        ax.set_ylim(self.ylim)
+
+
+class LabelAxesPlotter(Plotter):
+    """Plotter that labels the x and y axes."""
+
+    def __init__(self, xlabel: str, ylabel: str):
+        self.xlabel = xlabel
+        self.ylabel = ylabel
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(self.ylabel)

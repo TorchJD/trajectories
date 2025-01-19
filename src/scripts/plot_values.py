@@ -19,7 +19,7 @@ from docopt import docopt
 from trajectories.constants import N_SAMPLES_SPSM, OBJECTIVES
 from trajectories.objectives import WithSPSMappingMixin
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
-from trajectories.plotters import AxesPlotter, MultiPlotter, MultiTrajPlotter, PFPlotter
+from trajectories.plotters import AxesPlotter, LabelAxesPlotter, MultiTrajPlotter, PFPlotter
 
 
 def main():
@@ -44,12 +44,12 @@ def main():
         raise ValueError("Can only plot values trajectories for objectives with 2 values.")
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotters = [AxesPlotter()]
+    common_plotter = AxesPlotter() + LabelAxesPlotter("Objective $1$", "Objective $2$")
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
         pf_points = torch.stack([objective(x) for x in sps_points]).numpy()
-        common_plotters.append(PFPlotter(pf_points))
+        common_plotter += PFPlotter(pf_points)
 
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
@@ -57,6 +57,6 @@ def main():
     for aggregator_key, Y in aggregator_to_Y.items():
         save_path = value_plots_dir / f"{aggregator_key}.pdf"
         fig, ax = plt.subplots(1, figsize=(2.5, 2.5))
-        plotter = MultiPlotter([*common_plotters, MultiTrajPlotter(Y)])
+        plotter = common_plotter + MultiTrajPlotter(Y)
         plotter(ax)
         plt.savefig(save_path, bbox_inches="tight")
