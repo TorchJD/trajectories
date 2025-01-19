@@ -75,6 +75,15 @@ OBJECTIVES = {
         ],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([0.0, 0.0])],
     ),
+    "CQF_v4": ConvexQuadraticForm(
+        Bs=[
+            torch.tensor([[cos(THETA), -sin(THETA)], [sin(THETA), cos(THETA)]])
+            @ torch.diag(torch.tensor([1.0, 0.1])),
+            torch.tensor([[cos(THETA), sin(THETA)], [-sin(THETA), cos(THETA)]])
+            @ torch.diag(torch.tensor([1.5, 0.1])),
+        ],
+        us=[torch.tensor([1.0, 0.0]), torch.tensor([0.0, 0.0])],
+    ),
 }
 BASE_LEARNING_RATES = {
     "EWQ-2": 0.075,
@@ -82,6 +91,7 @@ BASE_LEARNING_RATES = {
     "CQF_v1": 0.1,
     "CQF_v2": 0.002,
     "CQF_v3": 0.1,
+    "CQF_v4": 0.1,
 }
 INITIAL_POINTS = {
     "EWQ-2": [
@@ -129,6 +139,16 @@ INITIAL_POINTS = {
         [1.0, 5.0],
         [0.0625, 0.0],
     ],
+    "CQF_v4": [
+        [0.8, 0.0],
+        [0.5, 0.0],
+        [0.25, 7.0],
+        [0.5, 7.0],
+        [0.75, 7.0],
+        [0.0, 4.0],
+        [1.0, 5.0],
+        [0.0625, 0.0],
+    ],
 }
 N_ITERS = {
     "EWQ-2": 50,
@@ -136,6 +156,7 @@ N_ITERS = {
     "CQF_v1": 200,
     "CQF_v2": 500,
     "CQF_v3": 1000,
+    "CQF_v4": 1000,
 }
 N_SAMPLES_SPSM = {
     "EWQ-2": 1,
@@ -143,4 +164,5 @@ N_SAMPLES_SPSM = {
     "CQF_v1": 100,
     "CQF_v2": 100,
     "CQF_v3": 100,
+    "CQF_v4": 100,
 }
