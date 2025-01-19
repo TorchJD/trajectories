@@ -21,6 +21,7 @@ from trajectories.optimization import compute_gradient_cosine_similarities
 from trajectories.paths import RESULTS_DIR, get_param_plots_dir, get_params_dir
 from trajectories.plotters import (
     AdjustPlotter,
+    AdjustToContentPlotter,
     AxesPlotter,
     ContourCirclesPlotter,
     HeatmapPlotter,
@@ -63,28 +64,29 @@ def main():
         main_content = np.concatenate([main_content, sps_points])
         common_plotter += SPSPlotter(sps_points)
 
-    if isinstance(objective, ElementWiseQuadratic):
-        common_plotter += ContourCirclesPlotter()
-
-    adjust_plotter = AdjustPlotter(main_content)
+    adjust_plotter = AdjustToContentPlotter(main_content)
     common_plotter += adjust_plotter
 
-    if objective.n_values == 2:
-        similarities = compute_gradient_cosine_similarities(
-            objective,
-            x0_min=adjust_plotter.xlim[0],
-            x0_max=adjust_plotter.xlim[1],
-            x1_min=adjust_plotter.ylim[0],
-            x1_max=adjust_plotter.ylim[1],
-            n=200,
-        )
-        common_plotter += HeatmapPlotter(
-            values=similarities.numpy(),
-            x_min=adjust_plotter.xlim[0],
-            x_max=adjust_plotter.xlim[1],
-            y_min=adjust_plotter.ylim[0],
-            y_max=adjust_plotter.ylim[1],
-        )
+    if isinstance(objective, ElementWiseQuadratic):
+        common_plotter += ContourCirclesPlotter()
+        common_plotter += AdjustPlotter(xlim=[-6.0, 6.0], ylim=[-6.0, 6.0])
+    else:
+        if objective.n_values == 2:
+            similarities = compute_gradient_cosine_similarities(
+                objective,
+                x0_min=adjust_plotter.xlim[0],
+                x0_max=adjust_plotter.xlim[1],
+                x1_min=adjust_plotter.ylim[0],
+                x1_max=adjust_plotter.ylim[1],
+                n=200,
+            )
+            common_plotter += HeatmapPlotter(
+                values=similarities.numpy(),
+                x_min=adjust_plotter.xlim[0],
+                x_max=adjust_plotter.xlim[1],
+                y_min=adjust_plotter.ylim[0],
+                y_max=adjust_plotter.ylim[1],
+            )
 
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_X = {key: np.load(params_dir / f"{key}.npy") for key in aggregator_keys}

@@ -239,6 +239,18 @@ class HeatmapPlotter(Plotter):
 
 
 class AdjustPlotter(Plotter):
+    """Plotter that adjusts the xlim and ylim of the plot to the specified xlim and ylim."""
+
+    def __init__(self, xlim: list[float], ylim: list[float]):
+        self.xlim = xlim
+        self.ylim = ylim
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.set_xlim(self.xlim)
+        ax.set_ylim(self.ylim)
+
+
+class AdjustToContentPlotter(AdjustPlotter):
     """Plotter that adjusts the xlim and ylim of the plot to the coordinates of the content."""
 
     def __init__(self, content: np.ndarray):
@@ -247,12 +259,10 @@ class AdjustPlotter(Plotter):
         x_range = x_max - x_min
         y_range = y_max - y_min
         margin = 0.05
-        self.xlim = [x_min - margin * x_range, x_max + margin * x_range]
-        self.ylim = [y_min - margin * y_range, y_max + margin * y_range]
-
-    def __call__(self, ax: plt.Axes) -> None:
-        ax.set_xlim(self.xlim)
-        ax.set_ylim(self.ylim)
+        super().__init__(
+            xlim=[x_min - margin * x_range, x_max + margin * x_range],
+            ylim=[y_min - margin * y_range, y_max + margin * y_range],
+        )
 
 
 class LabelAxesPlotter(Plotter):
