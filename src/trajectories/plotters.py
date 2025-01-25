@@ -85,7 +85,7 @@ class OptimalLinePlotter(Plotter):
         self.color = color
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.plot(self.points[:, 0], self.points[:, 1], color=self.color, linewidth=2.5)
+        ax.plot(self.points[:, 0], self.points[:, 1], color=self.color, linewidth=1.5)
 
 
 class AxesPlotter(Plotter):
