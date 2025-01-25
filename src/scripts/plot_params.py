@@ -57,7 +57,7 @@ def main():
     main_content = initial_points  # The content to which the axes must be adjusted
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = AxesPlotter() + LabelAxesPlotter("$x$", "$y$")
+    common_plotter = LabelAxesPlotter("$x$", "$y$")
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5).numpy()
@@ -68,6 +68,7 @@ def main():
     common_plotter += adjust_plotter
 
     if isinstance(objective, ElementWiseQuadratic):
+        common_plotter += AxesPlotter()
         common_plotter += ContourCirclesPlotter()
         common_plotter += AdjustPlotter(xlim=[-6.0, 6.0], ylim=[-6.0, 6.0])
     else:

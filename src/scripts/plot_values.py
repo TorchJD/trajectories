@@ -19,7 +19,7 @@ from docopt import docopt
 from trajectories.constants import N_SAMPLES_SPSM, OBJECTIVES
 from trajectories.objectives import WithSPSMappingMixin
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
-from trajectories.plotters import AxesPlotter, LabelAxesPlotter, MultiTrajPlotter, PFPlotter
+from trajectories.plotters import LabelAxesPlotter, MultiTrajPlotter, PFPlotter
 
 
 def main():
@@ -44,7 +44,7 @@ def main():
         raise ValueError("Can only plot values trajectories for objectives with 2 values.")
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = AxesPlotter() + LabelAxesPlotter("Objective $1$", "Objective $2$")
+    common_plotter = LabelAxesPlotter("Objective $1$", "Objective $2$")
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
