@@ -47,8 +47,14 @@ class PointPlotter(Plotter, ABC):
 class InitialPointPlotter(PointPlotter):
     """PointPlotter that can draw the initial point."""
 
+    def __init__(self, x: float, y: float, color: Color = "black"):
+        super().__init__(x, y)
+        self.color = color
+
     def __call__(self, ax: plt.Axes) -> None:
-        ax.scatter(self.x, self.y, color="black", s=10)
+        ax.scatter(
+            self.x, self.y, color=self.color, edgecolors="black", s=10, linewidth=0.6, zorder=2
+        )
 
 
 class OptimalPointPlotter(PointPlotter):
@@ -171,16 +177,20 @@ class PathPlotter(MultiPlotter):
 class TrajPlotter(MultiPlotter):
     """Plotter that can draw a trajectory: initial point + path."""
 
-    def __init__(self, points: np.array):
-        plotters = [PathPlotter(points), InitialPointPlotter(points[0, 0], points[0, 1])]
+    def __init__(self, points: np.array, initial_point_color: tuple[float, float, float, float]):
+        x = points[0, 0]
+        y = points[0, 1]
+        plotters = [InitialPointPlotter(x, y, initial_point_color), PathPlotter(points)]
         super().__init__(plotters)
 
 
 class MultiTrajPlotter(MultiPlotter):
     """Plotter that can draw several trajectories (one for each initial point)."""
 
+    CMAP = plt.get_cmap("tab10")
+
     def __init__(self, points_matrix: np.ndarray):
-        plotters = [TrajPlotter(points) for points in points_matrix]
+        plotters = [TrajPlotter(points, self.CMAP(i)) for i, points in enumerate(points_matrix)]
         super().__init__(plotters)
 
 
@@ -210,14 +220,14 @@ class SPSPlotter(SetPlotter):
     """Plotter that can represent the Strong Pareto stationary set: black SetPlotter"""
 
     def __init__(self, sps_points: np.ndarray):
-        super().__init__(points=sps_points, color="black")
+        super().__init__(points=sps_points, color="#646464")
 
 
 class PFPlotter(SetPlotter):
     """Plotter that can represent the Pareto front: black SetPlotter"""
 
     def __init__(self, pf_points: np.ndarray):
-        super().__init__(points=pf_points, color="black")
+        super().__init__(points=pf_points, color="#646464")
 
 
 class HeatmapPlotter(Plotter):
