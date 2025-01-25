@@ -84,8 +84,10 @@ def main():
                 aggregator.reset()
             reset_seed()
 
-            x0 = torch.tensor(initial_point)
-            xs, ys = optimize(objective, x0=x0, aggregator=aggregator, lr=lr, n_iters=n_iters)
+            initial_x = torch.tensor(initial_point)
+            xs, ys = optimize(
+                objective, initial_x=initial_x, aggregator=aggregator, lr=lr, n_iters=n_iters
+            )
 
             xs_list.append(torch.stack(xs))
             ys_list.append(torch.stack(ys))

@@ -10,14 +10,14 @@ from trajectories.objectives import Objective
 
 def optimize(
     objective: Objective,
-    x0: Tensor,
+    initial_x: Tensor,
     aggregator: Aggregator,
     lr: float,
     n_iters: int,
 ) -> tuple[list[Tensor], list[Tensor]]:
     xs = []
     ys = []
-    x = x0.clone().requires_grad_()
+    x = initial_x.clone().requires_grad_()
     optimizer = torch.optim.SGD([x], lr=lr)
     for i in range(n_iters):
         xs.append(x.detach().clone())
