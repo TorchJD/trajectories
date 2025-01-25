@@ -16,12 +16,13 @@ import numpy as np
 import torch
 from docopt import docopt
 
-from trajectories.constants import N_SAMPLES_SPSM, OBJECTIVES
+from trajectories.constants import LATEX_NAMES, N_SAMPLES_SPSM, OBJECTIVES, SUBPLOT_LOCATIONS
 from trajectories.objectives import WithSPSMappingMixin
 from trajectories.optimization import compute_objectives_pf_distances
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
 from trajectories.plotters import (
     AdjustToContentPlotter,
+    EmptyPlotter,
     HeatmapPlotter,
     LabelAxesPlotter,
     MultiTrajPlotter,
@@ -51,7 +52,7 @@ def main():
         raise ValueError("Can only plot values trajectories for objectives with 2 values.")
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = LabelAxesPlotter("Objective $1$", "Objective $2$")
+    common_plotter = EmptyPlotter()
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
     if len(aggregator_to_Y) == 0:
@@ -88,9 +89,27 @@ def main():
             cmap="Reds",
         )
 
+    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+    save_path = value_plots_dir / "all.pdf"
+
     for aggregator_key, Y in aggregator_to_Y.items():
-        save_path = value_plots_dir / f"{aggregator_key}.pdf"
-        fig, ax = plt.subplots(1, figsize=(2.5, 2.5))
+        i, j = SUBPLOT_LOCATIONS[aggregator_key]
         plotter = common_plotter + MultiTrajPlotter(Y)
-        plotter(ax)
-        plt.savefig(save_path, bbox_inches="tight")
+        if j == 0 and i == 1:
+            plotter += LabelAxesPlotter("Objective $1$", "Objective $2$")
+        elif j == 0:
+            plotter += LabelAxesPlotter(None, "Objective $2$")
+            axes[i][j].set_xticks([])
+        elif i == 1:
+            plotter += LabelAxesPlotter("Objective $1$", None)
+            axes[i][j].set_yticks([])
+        else:
+            axes[i][j].set_xticks([])
+            axes[i][j].set_yticks([])
+
+        plotter(axes[i][j])
+        axes[i][j].set_title(LATEX_NAMES[aggregator_key])
+        axes[i][j].set_box_aspect(1)
+
+    fig.tight_layout()
+    plt.savefig(save_path, bbox_inches="tight")

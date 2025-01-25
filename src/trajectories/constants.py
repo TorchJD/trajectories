@@ -44,6 +44,32 @@ LR_MULTIPLIERS = {
     "random": 1.0,
     "mean": 1.0,
 }
+SUBPLOT_LOCATIONS = {
+    "upgrad": (1, 4),
+    "mgda": (0, 1),
+    "cagrad": (1, 0),
+    "nashmtl": (1, 2),
+    "graddrop": (0, 3),
+    "imtl_g": (0, 4),
+    "aligned_mtl": (1, 3),
+    "dualproj": (0, 2),
+    "random": (1, 1),
+    "mean": (0, 0),
+    # No location for PCGrad as it's equivalent to UPGrad with 2 objectives
+}
+LATEX_NAMES = {
+    "upgrad": r"$\mathcal A_{\mathrm{UPGrad}}$",
+    "mgda": r"$\mathcal A_{\mathrm{MGDA}}$",
+    "cagrad": r"$\mathcal A_{\mathrm{CAGrad}}$",
+    "nashmtl": r"$\mathcal A_{\mathrm{Nash-MTL}}$",
+    "graddrop": r"$\mathcal A_{\mathrm{GradDrop}}$",
+    "imtl_g": r"$\mathcal A_{\mathrm{IMTL-G}}$",
+    "aligned_mtl": r"$\mathcal A_{\mathrm{Aligned-MTL}}$",
+    "dualproj": r"$\mathcal A_{\mathrm{DualProj}}$",
+    "pcgrad": r"$\mathcal A_{\mathrm{PCGrad}}$",
+    "random": r"$\mathcal A_{\mathrm{RGW}}$",
+    "mean": r"$\mathcal A_{\mathrm{Mean}}$",
+}
 
 THETA = 0.1
 THETA_v5 = np.pi / 16

@@ -15,7 +15,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from docopt import docopt
 
-from trajectories.constants import INITIAL_POINTS, N_SAMPLES_SPSM, OBJECTIVES
+from trajectories.constants import (
+    INITIAL_POINTS,
+    LATEX_NAMES,
+    N_SAMPLES_SPSM,
+    OBJECTIVES,
+    SUBPLOT_LOCATIONS,
+)
 from trajectories.objectives import ElementWiseQuadratic, WithSPSMappingMixin
 from trajectories.optimization import compute_gradient_cosine_similarities
 from trajectories.paths import RESULTS_DIR, get_param_plots_dir, get_params_dir
@@ -24,6 +30,7 @@ from trajectories.plotters import (
     AdjustToContentPlotter,
     AxesPlotter,
     ContourCirclesPlotter,
+    EmptyPlotter,
     HeatmapPlotter,
     LabelAxesPlotter,
     MultiTrajPlotter,
@@ -57,7 +64,7 @@ def main():
     main_content = initial_points  # The content to which the axes must be adjusted
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = LabelAxesPlotter("$x$", "$y$")
+    common_plotter = EmptyPlotter()
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5).numpy()
@@ -95,9 +102,27 @@ def main():
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_X = {key: np.load(params_dir / f"{key}.npy") for key in aggregator_keys}
 
+    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+    save_path = param_plots_dir / "all.pdf"
+
     for aggregator_key, X in aggregator_to_X.items():
-        save_path = param_plots_dir / f"{aggregator_key}.pdf"
-        fig, ax = plt.subplots(1, figsize=(2.5, 2.5))
+        i, j = SUBPLOT_LOCATIONS[aggregator_key]
         plotter = common_plotter + MultiTrajPlotter(X)
-        plotter(ax)
-        plt.savefig(save_path, bbox_inches="tight")
+        if j == 0 and i == 1:
+            plotter += LabelAxesPlotter("$x$", "$y$")
+        elif j == 0:
+            plotter += LabelAxesPlotter(None, "$y$")
+            axes[i][j].set_xticks([])
+        elif i == 1:
+            plotter += LabelAxesPlotter("$x$", None)
+            axes[i][j].set_yticks([])
+        else:
+            axes[i][j].set_xticks([])
+            axes[i][j].set_yticks([])
+
+        plotter(axes[i][j])
+        axes[i][j].set_title(LATEX_NAMES[aggregator_key])
+        axes[i][j].set_box_aspect(1)
+
+    fig.tight_layout()
+    plt.savefig(save_path, bbox_inches="tight")
