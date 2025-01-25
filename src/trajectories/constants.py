@@ -22,7 +22,7 @@ AGGREGATORS = {
     "upgrad": UPGrad(reg_eps=1e-7, norm_eps=1e-9),
     "mgda": MGDA(),
     "cagrad": CAGrad(c=0.5),
-    "nashmtl": NashMTL(n_tasks=2),
+    "nashmtl": NashMTL(n_tasks=2, optim_niter=1),
     "graddrop": GradDrop(),
     "imtl_g": IMTLG(),
     "aligned_mtl": AlignedMTL(),
