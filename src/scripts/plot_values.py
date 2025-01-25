@@ -65,7 +65,7 @@ def main():
         common_plotter += PFPlotter(pf_points_array)
 
         if objective_key == "CQF_v5":
-            main_content = np.array([[0.0, 0.0], [2.2, 10.0]])
+            main_content = np.array([[0.0, 0.0], [2.5, 8.5]])
 
         adjust_plotter = AdjustToContentPlotter(main_content)
         common_plotter += adjust_plotter
