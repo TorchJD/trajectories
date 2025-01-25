@@ -25,6 +25,13 @@ class Plotter(ABC):
         return MultiPlotter([self, other])
 
 
+class EmptyPlotter(Plotter):
+    """Plotter that does nothing"""
+
+    def __call__(self, ax: plt.Axes) -> None:
+        pass
+
+
 class MultiPlotter(Plotter):
     """Plotter applying several plotters."""
 
