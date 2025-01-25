@@ -187,7 +187,7 @@ class TrajPlotter(MultiPlotter):
 class MultiTrajPlotter(MultiPlotter):
     """Plotter that can draw several trajectories (one for each initial point)."""
 
-    CMAP = plt.get_cmap("tab10")
+    CMAP = plt.get_cmap("Set2")
 
     def __init__(self, points_matrix: np.ndarray):
         plotters = [TrajPlotter(points, self.CMAP(i)) for i, points in enumerate(points_matrix)]
