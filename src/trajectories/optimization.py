@@ -88,6 +88,9 @@ def compute_objectives_pf_distances(
 
 
 def compute_pf_distance(pf_points: Tensor, y: Tensor) -> Tensor:
+    if len(pf_points) == 1:
+        return (y - pf_points[0]).norm()
+
     pf_first = pf_points[:-1, :]
     pf_second = pf_points[1:, :]
     pf_consecutive_diff = pf_first - pf_second
