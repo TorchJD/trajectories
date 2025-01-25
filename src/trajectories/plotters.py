@@ -272,7 +272,7 @@ class HeatmapPlotter(Plotter):
             vmin=self.vmin,
             vmax=self.vmax,
             extent=(self.x_min, self.x_max, self.y_min, self.y_max),
-            alpha=0.5,
+            alpha=0.4,
             interpolation="bicubic",
         )
 
