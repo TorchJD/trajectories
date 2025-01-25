@@ -71,15 +71,15 @@ LATEX_NAMES = {
     "mean": r"$\mathcal A_{\mathrm{Mean}}$",
 }
 
-THETA_v5 = np.pi / 16
+THETA = np.pi / 16
 
 OBJECTIVES = {
     "EWQ": ElementWiseQuadratic(2),
     "CQF": ConvexQuadraticForm(
         Bs=[
-            torch.tensor([[cos(THETA_v5), -sin(THETA_v5)], [sin(THETA_v5), cos(THETA_v5)]])
+            torch.tensor([[cos(THETA), -sin(THETA)], [sin(THETA), cos(THETA)]])
             @ torch.diag(torch.tensor([1.0, 0.1])),
-            torch.tensor([[cos(THETA_v5), sin(THETA_v5)], [-sin(THETA_v5), cos(THETA_v5)]])
+            torch.tensor([[cos(THETA), sin(THETA)], [-sin(THETA), cos(THETA)]])
             @ torch.diag(torch.tensor([2.0, 0.1])),
         ],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
