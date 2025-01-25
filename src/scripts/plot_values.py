@@ -56,13 +56,16 @@ def main():
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
     # The content to which the axes must be adjusted
-    main_content = list(aggregator_to_Y.items())[0][1][:, 0, :]
+    first_agg_Y = list(aggregator_to_Y.values())[0]
+    initial_values = first_agg_Y[:, 0, :]
+    main_content = initial_values
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
         pf_points = torch.stack([objective(x) for x in sps_points])
         pf_points_array = pf_points.numpy()
         common_plotter += PFPlotter(pf_points_array)
+        main_content = np.concatenate([main_content, pf_points_array])
 
         if objective_key == "CQF":
             main_content = np.array([[0.0, 0.0], [2.5, 8.5]])
