@@ -1,10 +1,17 @@
 from abc import ABC, abstractmethod
+from typing import Union
 
 import numpy as np
 from matplotlib import cm as cm
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from numpy.lib._stride_tricks_impl import sliding_window_view
+
+Color = Union[
+    str,  # Named colors or hex strings
+    tuple[float, float, float],  # RGB
+    tuple[float, float, float, float],  # RGBA
+]
 
 
 class Plotter(ABC):
@@ -47,7 +54,7 @@ class InitialPointPlotter(PointPlotter):
 class OptimalPointPlotter(PointPlotter):
     """PointPlotter that can draw the optimal point."""
 
-    def __init__(self, x: float, y: float, color: str):
+    def __init__(self, x: float, y: float, color: Color):
         super().__init__(x, y)
         self.color = color
 
@@ -67,7 +74,7 @@ class OptimalLinePlotter(Plotter):
     Plotter that can draw a continuous path with uniform color linking the provided optimal points.
     """
 
-    def __init__(self, points: np.ndarray, color: str):
+    def __init__(self, points: np.ndarray, color: Color):
         self.points = points
         self.color = color
 
@@ -120,7 +127,7 @@ class ContourCirclesPlotter(MultiPlotter):
 class SegmentPlotter(Plotter):
     """Plotter that can draw a single segment of a given color."""
 
-    def __init__(self, xp: np.ndarray, yp: np.ndarray, color: str):
+    def __init__(self, xp: np.ndarray, yp: np.ndarray, color: Color):
         self.xp = xp
         self.yp = yp
         self.color = color
@@ -186,7 +193,7 @@ class SetPlotter(Plotter):
     work for all optimal sets, but it should be fine for those that are convex.
     """
 
-    def __init__(self, points: np.ndarray, color: str):
+    def __init__(self, points: np.ndarray, color: Color):
         self.points = points
         self.color = color
 
