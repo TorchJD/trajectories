@@ -220,14 +220,14 @@ class SPSPlotter(SetPlotter):
     """Plotter that can represent the Strong Pareto stationary set: black SetPlotter"""
 
     def __init__(self, sps_points: np.ndarray):
-        super().__init__(points=sps_points, color="#646464")
+        super().__init__(points=sps_points, color="#282828")
 
 
 class PFPlotter(SetPlotter):
     """Plotter that can represent the Pareto front: black SetPlotter"""
 
     def __init__(self, pf_points: np.ndarray):
-        super().__init__(points=pf_points, color="#646464")
+        super().__init__(points=pf_points, color="#282828")
 
 
 class HeatmapPlotter(Plotter):
@@ -252,6 +252,8 @@ class HeatmapPlotter(Plotter):
             vmin=-1,
             vmax=1,
             extent=(self.x_min, self.x_max, self.y_min, self.y_max),
+            alpha=0.5,
+            interpolation="bicubic",
         )
 
 
