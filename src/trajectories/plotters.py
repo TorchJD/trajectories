@@ -236,21 +236,34 @@ class HeatmapPlotter(Plotter):
     coordinates.
     """
 
-    def __init__(self, values: np.ndarray, x_min: float, x_max: float, y_min: float, y_max: float):
+    def __init__(
+        self,
+        values: np.ndarray,
+        x_min: float,
+        x_max: float,
+        y_min: float,
+        y_max: float,
+        vmin: float,
+        vmax: float,
+        cmap: str,
+    ):
         self.values = values
         self.x_min = x_min
         self.x_max = x_max
         self.y_min = y_min
         self.y_max = y_max
+        self.cmap = cmap
+        self.vmin = vmin
+        self.vmax = vmax
 
     def __call__(self, ax: plt.Axes) -> None:
         ax.imshow(
             self.values.T,
             origin="lower",
-            cmap="PRGn",
+            cmap=self.cmap,
             aspect="auto",
-            vmin=-1,
-            vmax=1,
+            vmin=self.vmin,
+            vmax=self.vmax,
             extent=(self.x_min, self.x_max, self.y_min, self.y_max),
             alpha=0.5,
             interpolation="bicubic",

@@ -18,8 +18,15 @@ from docopt import docopt
 
 from trajectories.constants import N_SAMPLES_SPSM, OBJECTIVES
 from trajectories.objectives import WithSPSMappingMixin
+from trajectories.optimization import compute_objectives_pf_distances
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
-from trajectories.plotters import LabelAxesPlotter, MultiTrajPlotter, PFPlotter
+from trajectories.plotters import (
+    AdjustToContentPlotter,
+    HeatmapPlotter,
+    LabelAxesPlotter,
+    MultiTrajPlotter,
+    PFPlotter,
+)
 
 
 def main():
@@ -45,14 +52,41 @@ def main():
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
     common_plotter = LabelAxesPlotter("Objective $1$", "Objective $2$")
+    aggregator_keys = metadata["aggregator_keys"]
+    aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
+    if len(aggregator_to_Y) == 0:
+        return
+    else:
+        # The content to which the axes must be adjusted
+        main_content = list(aggregator_to_Y.items())[0][1][:, 0, :]
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
-        pf_points = torch.stack([objective(x) for x in sps_points]).numpy()
-        common_plotter += PFPlotter(pf_points)
+        pf_points = torch.stack([objective(x) for x in sps_points])
+        pf_points_array = pf_points.numpy()
+        common_plotter += PFPlotter(pf_points_array)
 
-    aggregator_keys = metadata["aggregator_keys"]
-    aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
+        main_content = np.concatenate([main_content, pf_points_array])
+        adjust_plotter = AdjustToContentPlotter(main_content)
+        common_plotter += adjust_plotter
+        distances = compute_objectives_pf_distances(
+            pf_points=pf_points,
+            y0_min=adjust_plotter.xlim[0],
+            y0_max=adjust_plotter.xlim[1],
+            y1_min=adjust_plotter.ylim[0],
+            y1_max=adjust_plotter.ylim[1],
+            n=200,
+        )
+        common_plotter += HeatmapPlotter(
+            values=distances.numpy(),
+            x_min=adjust_plotter.xlim[0],
+            x_max=adjust_plotter.xlim[1],
+            y_min=adjust_plotter.ylim[0],
+            y_max=adjust_plotter.ylim[1],
+            vmin=0,
+            vmax=1,
+            cmap="Reds",
+        )
 
     for aggregator_key, Y in aggregator_to_Y.items():
         save_path = value_plots_dir / f"{aggregator_key}.pdf"

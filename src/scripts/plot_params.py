@@ -87,6 +87,9 @@ def main():
                 x_max=adjust_plotter.xlim[1],
                 y_min=adjust_plotter.ylim[0],
                 y_max=adjust_plotter.ylim[1],
+                vmin=-1,
+                vmax=1,
+                cmap="PiYG",
             )
 
     aggregator_keys = metadata["aggregator_keys"]
