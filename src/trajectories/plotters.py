@@ -110,7 +110,7 @@ class CirclePlotter(Plotter):
             color=self.color,
             fill=False,
             linestyle="--",
-            alpha=0.8,
+            alpha=0.5,
             linewidth=1.5,
         )
         ax.add_patch(circle)
