@@ -58,7 +58,7 @@ SUBPLOT_LOCATIONS = {
     # No location for PCGrad as it's equivalent to UPGrad with 2 objectives
 }
 LATEX_NAMES = {
-    "upgrad": r"$\mathcal A_{\mathrm{UPGrad}}$",
+    "upgrad": r"$\mathcal A_{\mathrm{UPGrad}}$ (ours)",
     "mgda": r"$\mathcal A_{\mathrm{MGDA}}$",
     "cagrad": r"$\mathcal A_{\mathrm{CAGrad}}$",
     "nashmtl": r"$\mathcal A_{\mathrm{Nash-MTL}}$",
