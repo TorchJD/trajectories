@@ -55,11 +55,8 @@ def main():
     common_plotter = EmptyPlotter()
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
-    if len(aggregator_to_Y) == 0:
-        return
-    else:
-        # The content to which the axes must be adjusted
-        main_content = list(aggregator_to_Y.items())[0][1][:, 0, :]
+    # The content to which the axes must be adjusted
+    main_content = list(aggregator_to_Y.items())[0][1][:, 0, :]
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
@@ -67,7 +64,9 @@ def main():
         pf_points_array = pf_points.numpy()
         common_plotter += PFPlotter(pf_points_array)
 
-        main_content = np.concatenate([main_content, pf_points_array])
+        if objective_key == "CQF_v5":
+            main_content = np.array([[0.0, 0.0], [2.2, 10.0]])
+
         adjust_plotter = AdjustToContentPlotter(main_content)
         common_plotter += adjust_plotter
         distances = compute_objectives_pf_distances(
