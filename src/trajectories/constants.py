@@ -74,8 +74,8 @@ LATEX_NAMES = {
 THETA_v5 = np.pi / 16
 
 OBJECTIVES = {
-    "EWQ-2": ElementWiseQuadratic(2),
-    "CQF_v5": ConvexQuadraticForm(
+    "EWQ": ElementWiseQuadratic(2),
+    "CQF": ConvexQuadraticForm(
         Bs=[
             torch.tensor([[cos(THETA_v5), -sin(THETA_v5)], [sin(THETA_v5), cos(THETA_v5)]])
             @ torch.diag(torch.tensor([1.0, 0.1])),
@@ -86,18 +86,18 @@ OBJECTIVES = {
     ),
 }
 BASE_LEARNING_RATES = {
-    "EWQ-2": 0.075,
-    "CQF_v5": 0.02,
+    "EWQ": 0.075,
+    "CQF": 0.02,
 }
 INITIAL_POINTS = {
-    "EWQ-2": [
+    "EWQ": [
         [3.0, -2.0],
         [0.0, -3.0],
         [-4.0, 4.0],
         [-3.0, 4.0],
         [-3.5, -0.75],
     ],
-    "CQF_v5": [
+    "CQF": [
         [0.5, 0.5],
         [-1.0, 7.0],
         [0.0, 0.0],
@@ -105,10 +105,10 @@ INITIAL_POINTS = {
     ],
 }
 N_ITERS = {
-    "EWQ-2": 50,
-    "CQF_v5": 2500,
+    "EWQ": 50,
+    "CQF": 2500,
 }
 N_SAMPLES_SPSM = {
-    "EWQ-2": 1,
-    "CQF_v5": 100,
+    "EWQ": 1,
+    "CQF": 100,
 }
