@@ -146,7 +146,7 @@ class SegmentPlotter(Plotter):
         self.color = color
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.plot(self.xp, self.yp, color=self.color, solid_capstyle="round", linewidth=1.25)
+        ax.plot(self.xp, self.yp, color=self.color, solid_capstyle="round", linewidth=1.5)
 
 
 class PathPlotter(MultiPlotter):
