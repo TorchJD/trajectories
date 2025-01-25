@@ -60,7 +60,7 @@ class InitialPointPlotter(PointPlotter):
 
     def __call__(self, ax: plt.Axes) -> None:
         ax.scatter(
-            self.x, self.y, color=self.color, edgecolors="black", s=20, linewidth=0.6, zorder=2
+            self.x, self.y, color=self.color, edgecolors="black", s=30, linewidth=0.7, zorder=2
         )
 
 
@@ -77,8 +77,8 @@ class OptimalPointPlotter(PointPlotter):
             self.y,
             marker="*",
             color=self.color,
-            zorder=1000,
-            s=50,
+            zorder=3,
+            s=60,
         )
 
 
@@ -92,7 +92,7 @@ class OptimalLinePlotter(Plotter):
         self.color = color
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.plot(self.points[:, 0], self.points[:, 1], color=self.color, linewidth=1.5)
+        ax.plot(self.points[:, 0], self.points[:, 1], color=self.color, linewidth=2.0)
 
 
 class AxesPlotter(Plotter):
@@ -146,7 +146,7 @@ class SegmentPlotter(Plotter):
         self.color = color
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.plot(self.xp, self.yp, color=self.color, solid_capstyle="round", linewidth=1)
+        ax.plot(self.xp, self.yp, color=self.color, solid_capstyle="round", linewidth=1.25)
 
 
 class PathPlotter(MultiPlotter):
