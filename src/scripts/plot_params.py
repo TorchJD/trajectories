@@ -77,7 +77,7 @@ def main():
     if isinstance(objective, ElementWiseQuadratic):
         common_plotter += AxesPlotter()
         common_plotter += ContourCirclesPlotter()
-        common_plotter += AdjustPlotter(xlim=[-6.0, 6.0], ylim=[-6.0, 6.0])
+        common_plotter += AdjustPlotter(xlim=[-5.0, 5.0], ylim=[-5.0, 5.0])
     else:
         if objective.n_values == 2:
             similarities = compute_gradient_cosine_similarities(
