@@ -53,7 +53,7 @@ class InitialPointPlotter(PointPlotter):
 
     def __call__(self, ax: plt.Axes) -> None:
         ax.scatter(
-            self.x, self.y, color=self.color, edgecolors="black", s=10, linewidth=0.6, zorder=2
+            self.x, self.y, color=self.color, edgecolors="black", s=20, linewidth=0.6, zorder=2
         )
 
 
