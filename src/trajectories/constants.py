@@ -85,14 +85,6 @@ OBJECTIVES = {
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
 }
-X_LABELS = {
-    "EWQ": "$x$",
-    "CQF": "$x_1$",
-}
-Y_LABELS = {
-    "EWQ": "$y$",
-    "CQF": "$x_2$",
-}
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
     "CQF": 0.05,
