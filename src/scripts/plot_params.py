@@ -89,7 +89,7 @@ def main():
                 n=200,
             )
             common_plotter += HeatmapPlotter(
-                values=similarities.numpy(),
+                values=similarities.numpy() ** 3,
                 x_min=adjust_plotter.xlim[0],
                 x_max=adjust_plotter.xlim[1],
                 y_min=adjust_plotter.ylim[0],
