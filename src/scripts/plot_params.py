@@ -21,6 +21,8 @@ from trajectories.constants import (
     N_SAMPLES_SPSM,
     OBJECTIVES,
     SUBPLOT_LOCATIONS,
+    X_LABELS,
+    Y_LABELS,
 )
 from trajectories.objectives import ElementWiseQuadratic, WithSPSMappingMixin
 from trajectories.optimization import compute_gradient_cosine_similarities
@@ -109,12 +111,12 @@ def main():
         i, j = SUBPLOT_LOCATIONS[aggregator_key]
         plotter = common_plotter + MultiTrajPlotter(X)
         if j == 0 and i == 1:
-            plotter += LabelAxesPlotter("$x$", "$y$")
+            plotter += LabelAxesPlotter(X_LABELS[objective_key], Y_LABELS[objective_key])
         elif j == 0:
-            plotter += LabelAxesPlotter(None, "$y$")
+            plotter += LabelAxesPlotter(None, Y_LABELS[objective_key])
             axes[i][j].set_xticks([])
         elif i == 1:
-            plotter += LabelAxesPlotter("$x$", None)
+            plotter += LabelAxesPlotter(X_LABELS[objective_key], None)
             axes[i][j].set_yticks([])
         else:
             axes[i][j].set_xticks([])
