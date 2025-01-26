@@ -80,7 +80,7 @@ OBJECTIVES = {
             torch.tensor([[cos(THETA), -sin(THETA)], [sin(THETA), cos(THETA)]])
             @ torch.diag(torch.tensor([1.0, 0.1])),
             torch.tensor([[cos(THETA), sin(THETA)], [-sin(THETA), cos(THETA)]])
-            @ torch.diag(torch.tensor([1.8, 0.1])),
+            @ torch.diag(torch.tensor([torch.sqrt(torch.tensor(3.0)), 0.1])),
         ],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
