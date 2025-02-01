@@ -277,7 +277,7 @@ class HeatmapPlotter(Plotter):
         )
 
 
-class AdjustPlotter(Plotter):
+class LimAdjuster(Plotter):
     """Plotter that adjusts the xlim and ylim of the plot to the specified xlim and ylim."""
 
     def __init__(self, xlim: list[float], ylim: list[float]):
@@ -289,7 +289,7 @@ class AdjustPlotter(Plotter):
         ax.set_ylim(self.ylim)
 
 
-class AdjustToContentPlotter(AdjustPlotter):
+class ContentLimAdjuster(LimAdjuster):
     """Plotter that adjusts the xlim and ylim of the plot to the coordinates of the content."""
 
     def __init__(self, content: np.ndarray):
@@ -304,21 +304,21 @@ class AdjustToContentPlotter(AdjustPlotter):
         )
 
 
-class ClearXTicksPlotter(Plotter):
+class XTicksClearer(Plotter):
     """Plotter that clears the xticks."""
 
     def __call__(self, ax: plt.Axes) -> None:
         ax.set_xticks([])
 
 
-class ClearYTicksPlotter(Plotter):
+class YTicksClearer(Plotter):
     """Plotter that clears the xticks."""
 
     def __call__(self, ax: plt.Axes) -> None:
         ax.set_yticks([])
 
 
-class LabelXAxisPlotter(Plotter):
+class XAxisLabeller(Plotter):
     """Plotter that labels the x-axis."""
 
     def __init__(self, xlabel: str | None):
@@ -328,7 +328,7 @@ class LabelXAxisPlotter(Plotter):
         ax.set_xlabel(self.xlabel)
 
 
-class LabelYAxisPlotter(Plotter):
+class YAxisLabeller(Plotter):
     """Plotter that labels the y-axis."""
 
     def __init__(self, ylabel: str | None):
@@ -338,7 +338,7 @@ class LabelYAxisPlotter(Plotter):
         ax.set_ylabel(self.ylabel)
 
 
-class SetTitlePlotter(Plotter):
+class TitleSetter(Plotter):
     """Plotter that sets the title."""
 
     def __init__(self, title: str | None):
@@ -348,7 +348,7 @@ class SetTitlePlotter(Plotter):
         ax.set_title(self.title)
 
 
-class SetSquareBoxAspectPlotter(Plotter):
+class SquareBoxAspectSetter(Plotter):
     """Plotter that sets a square box aspect."""
 
     def __call__(self, ax: plt.Axes) -> None:

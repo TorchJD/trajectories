@@ -26,19 +26,19 @@ from trajectories.objectives import ElementWiseQuadratic, WithSPSMappingMixin
 from trajectories.optimization import compute_gradient_cosine_similarities
 from trajectories.paths import RESULTS_DIR, get_param_plots_dir, get_params_dir
 from trajectories.plotters import (
-    AdjustPlotter,
-    AdjustToContentPlotter,
     AxesPlotter,
-    ClearXTicksPlotter,
-    ClearYTicksPlotter,
+    ContentLimAdjuster,
     ContourCirclesPlotter,
     HeatmapPlotter,
-    LabelXAxisPlotter,
-    LabelYAxisPlotter,
+    LimAdjuster,
     MultiTrajPlotter,
-    SetSquareBoxAspectPlotter,
-    SetTitlePlotter,
     SPSPlotter,
+    SquareBoxAspectSetter,
+    TitleSetter,
+    XAxisLabeller,
+    XTicksClearer,
+    YAxisLabeller,
+    YTicksClearer,
 )
 
 
@@ -68,20 +68,20 @@ def main():
     main_content = initial_points  # The content to which the axes must be adjusted
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = SetSquareBoxAspectPlotter()
+    common_plotter = SquareBoxAspectSetter()
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5).numpy()
         main_content = np.concatenate([main_content, sps_points])
         common_plotter += SPSPlotter(sps_points)
 
-    adjust_plotter = AdjustToContentPlotter(main_content)
+    adjust_plotter = ContentLimAdjuster(main_content)
     common_plotter += adjust_plotter
 
     if isinstance(objective, ElementWiseQuadratic):
         common_plotter += AxesPlotter()
         common_plotter += ContourCirclesPlotter()
-        common_plotter += AdjustPlotter(xlim=[-5.0, 5.0], ylim=[-5.0, 5.0])
+        common_plotter += LimAdjuster(xlim=[-5.0, 5.0], ylim=[-5.0, 5.0])
     else:
         if objective.n_values == 2:
             similarities = compute_gradient_cosine_similarities(
@@ -111,11 +111,10 @@ def main():
 
     for aggregator_key, X in aggregator_to_X.items():
         i, j = SUBPLOT_LOCATIONS[aggregator_key]
-        plotter = common_plotter + MultiTrajPlotter(X)
 
-        plotter += LabelXAxisPlotter("$x_1$") if i == 1 else ClearXTicksPlotter()
-        plotter += LabelYAxisPlotter("$x_2$") if j == 0 else ClearYTicksPlotter()
-        plotter += SetTitlePlotter(LATEX_NAMES[aggregator_key])
+        plotter = common_plotter + MultiTrajPlotter(X) + TitleSetter(LATEX_NAMES[aggregator_key])
+        plotter += XAxisLabeller("$x_1$") if i == 1 else XTicksClearer()
+        plotter += YAxisLabeller("$x_2$") if j == 0 else YTicksClearer()
 
         plotter(axes[i][j])
 

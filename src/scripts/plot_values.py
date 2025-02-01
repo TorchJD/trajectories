@@ -21,16 +21,16 @@ from trajectories.objectives import WithSPSMappingMixin
 from trajectories.optimization import compute_objectives_pf_distances
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
 from trajectories.plotters import (
-    AdjustToContentPlotter,
-    ClearXTicksPlotter,
-    ClearYTicksPlotter,
+    ContentLimAdjuster,
     HeatmapPlotter,
-    LabelXAxisPlotter,
-    LabelYAxisPlotter,
     MultiTrajPlotter,
     PFPlotter,
-    SetSquareBoxAspectPlotter,
-    SetTitlePlotter,
+    SquareBoxAspectSetter,
+    TitleSetter,
+    XAxisLabeller,
+    XTicksClearer,
+    YAxisLabeller,
+    YTicksClearer,
 )
 
 
@@ -56,7 +56,7 @@ def main():
         raise ValueError("Can only plot values trajectories for objectives with 2 values.")
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = SetSquareBoxAspectPlotter()
+    common_plotter = SquareBoxAspectSetter()
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
     # The content to which the axes must be adjusted
@@ -74,7 +74,7 @@ def main():
         if objective_key == "CQF":
             main_content = np.array([[0.0, 0.0], [2.5, 8.5]])
 
-        adjust_plotter = AdjustToContentPlotter(main_content)
+        adjust_plotter = ContentLimAdjuster(main_content)
         common_plotter += adjust_plotter
         distances = compute_objectives_pf_distances(
             pf_points=pf_points,
@@ -100,11 +100,10 @@ def main():
 
     for aggregator_key, Y in aggregator_to_Y.items():
         i, j = SUBPLOT_LOCATIONS[aggregator_key]
-        plotter = common_plotter + MultiTrajPlotter(Y)
 
-        plotter += LabelXAxisPlotter("Objective $1$") if i == 1 else ClearXTicksPlotter()
-        plotter += LabelYAxisPlotter("Objective $2$") if j == 0 else ClearYTicksPlotter()
-        plotter += SetTitlePlotter(LATEX_NAMES[aggregator_key])
+        plotter = common_plotter + MultiTrajPlotter(Y) + TitleSetter(LATEX_NAMES[aggregator_key])
+        plotter += XAxisLabeller("Objective $1$") if i == 1 else XTicksClearer()
+        plotter += YAxisLabeller("Objective $2$") if j == 0 else YTicksClearer()
 
         plotter(axes[i][j])
 
