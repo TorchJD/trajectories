@@ -304,13 +304,52 @@ class AdjustToContentPlotter(AdjustPlotter):
         )
 
 
-class LabelAxesPlotter(Plotter):
-    """Plotter that labels the x and y axes."""
+class ClearXTicksPlotter(Plotter):
+    """Plotter that clears the xticks."""
 
-    def __init__(self, xlabel: str, ylabel: str):
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.set_xticks([])
+
+
+class ClearYTicksPlotter(Plotter):
+    """Plotter that clears the xticks."""
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.set_yticks([])
+
+
+class LabelXAxisPlotter(Plotter):
+    """Plotter that labels the x-axis."""
+
+    def __init__(self, xlabel: str | None):
         self.xlabel = xlabel
-        self.ylabel = ylabel
 
     def __call__(self, ax: plt.Axes) -> None:
         ax.set_xlabel(self.xlabel)
+
+
+class LabelYAxisPlotter(Plotter):
+    """Plotter that labels the y-axis."""
+
+    def __init__(self, ylabel: str | None):
+        self.ylabel = ylabel
+
+    def __call__(self, ax: plt.Axes) -> None:
         ax.set_ylabel(self.ylabel)
+
+
+class SetTitlePlotter(Plotter):
+    """Plotter that sets the title."""
+
+    def __init__(self, title: str | None):
+        self.title = title
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.set_title(self.title)
+
+
+class SetSquareBoxAspectPlotter(Plotter):
+    """Plotter that sets a square box aspect."""
+
+    def __call__(self, ax: plt.Axes) -> None:
+        ax.set_box_aspect(1)

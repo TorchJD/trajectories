@@ -29,11 +29,15 @@ from trajectories.plotters import (
     AdjustPlotter,
     AdjustToContentPlotter,
     AxesPlotter,
+    ClearXTicksPlotter,
+    ClearYTicksPlotter,
     ContourCirclesPlotter,
-    EmptyPlotter,
     HeatmapPlotter,
-    LabelAxesPlotter,
+    LabelXAxisPlotter,
+    LabelYAxisPlotter,
     MultiTrajPlotter,
+    SetSquareBoxAspectPlotter,
+    SetTitlePlotter,
     SPSPlotter,
 )
 
@@ -64,7 +68,7 @@ def main():
     main_content = initial_points  # The content to which the axes must be adjusted
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = EmptyPlotter()
+    common_plotter = SetSquareBoxAspectPlotter()
 
     if isinstance(objective, WithSPSMappingMixin):
         sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5).numpy()
@@ -108,21 +112,12 @@ def main():
     for aggregator_key, X in aggregator_to_X.items():
         i, j = SUBPLOT_LOCATIONS[aggregator_key]
         plotter = common_plotter + MultiTrajPlotter(X)
-        if j == 0 and i == 1:
-            plotter += LabelAxesPlotter("$x_1$", "$x_2$")
-        elif j == 0:
-            plotter += LabelAxesPlotter(None, "$x_2$")
-            axes[i][j].set_xticks([])
-        elif i == 1:
-            plotter += LabelAxesPlotter("$x_1$", None)
-            axes[i][j].set_yticks([])
-        else:
-            axes[i][j].set_xticks([])
-            axes[i][j].set_yticks([])
+
+        plotter += LabelXAxisPlotter("$x_1$") if i == 1 else ClearXTicksPlotter()
+        plotter += LabelYAxisPlotter("$x_2$") if j == 0 else ClearYTicksPlotter()
+        plotter += SetTitlePlotter(LATEX_NAMES[aggregator_key])
 
         plotter(axes[i][j])
-        axes[i][j].set_title(LATEX_NAMES[aggregator_key])
-        axes[i][j].set_box_aspect(1)
 
     fig.tight_layout()
     plt.savefig(save_path, bbox_inches="tight")

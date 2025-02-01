@@ -22,11 +22,15 @@ from trajectories.optimization import compute_objectives_pf_distances
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
 from trajectories.plotters import (
     AdjustToContentPlotter,
-    EmptyPlotter,
+    ClearXTicksPlotter,
+    ClearYTicksPlotter,
     HeatmapPlotter,
-    LabelAxesPlotter,
+    LabelXAxisPlotter,
+    LabelYAxisPlotter,
     MultiTrajPlotter,
     PFPlotter,
+    SetSquareBoxAspectPlotter,
+    SetTitlePlotter,
 )
 
 
@@ -52,7 +56,7 @@ def main():
         raise ValueError("Can only plot values trajectories for objectives with 2 values.")
 
     n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    common_plotter = EmptyPlotter()
+    common_plotter = SetSquareBoxAspectPlotter()
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
     # The content to which the axes must be adjusted
@@ -97,21 +101,12 @@ def main():
     for aggregator_key, Y in aggregator_to_Y.items():
         i, j = SUBPLOT_LOCATIONS[aggregator_key]
         plotter = common_plotter + MultiTrajPlotter(Y)
-        if j == 0 and i == 1:
-            plotter += LabelAxesPlotter("Objective $1$", "Objective $2$")
-        elif j == 0:
-            plotter += LabelAxesPlotter(None, "Objective $2$")
-            axes[i][j].set_xticks([])
-        elif i == 1:
-            plotter += LabelAxesPlotter("Objective $1$", None)
-            axes[i][j].set_yticks([])
-        else:
-            axes[i][j].set_xticks([])
-            axes[i][j].set_yticks([])
+
+        plotter += LabelXAxisPlotter("Objective $1$") if i == 1 else ClearXTicksPlotter()
+        plotter += LabelYAxisPlotter("Objective $2$") if j == 0 else ClearYTicksPlotter()
+        plotter += SetTitlePlotter(LATEX_NAMES[aggregator_key])
 
         plotter(axes[i][j])
-        axes[i][j].set_title(LATEX_NAMES[aggregator_key])
-        axes[i][j].set_box_aspect(1)
 
     fig.tight_layout()
     plt.savefig(save_path, bbox_inches="tight")
