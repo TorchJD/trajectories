@@ -5,11 +5,18 @@ optimization trajectories.
 
 ## Installation
 ```bash
-pdm venv create 3.12.3  # Requires python 3.12.3 to be installed
-pdm use -i .venv/bin/python
-pdm install --frozen-lockfile
-pdm run pre-commit install
+uv python install 3.13.3
+uv python pin 3.13.3
 ```
+
+```bash
+uv venv
+CC=gcc uv pip install "git+ssh://git@github.com/TorchJD/torchjd.git@main[full]"
+uv pip install -e . --group check
+uv run pre-commit install
+```
+Note that here, "main" can be replaced with whatever ref (branch, tag or commit hash) of torchjd you
+want.
 
 You might also need some tex packages to be able to generate the plots (see
 https://stackoverflow.com/a/53080504)
