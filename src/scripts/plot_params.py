@@ -9,6 +9,7 @@ Arguments:
 Options:
   -h --help          Show this screen.
 """
+
 import json
 
 import matplotlib.pyplot as plt
