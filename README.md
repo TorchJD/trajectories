@@ -32,7 +32,24 @@ Please refer to the docstring of the scripts.
 
 ## Examples
 
+### Element-wise quadratic
+
+Optimization of the function
+$\mathbb f{\mathrm{EWQ}}(\mathbb x) = \begin{bmatrix} x_1^2 & x_2^2 \end{bmatrix}^\T.$ by various
+aggregators.
+
+Trajectories in the parameter space:
 ![image](examples/EWQ_params.jpg)
+
+Trajectories in the value space:
 ![image](examples/EWQ_values.jpg)
+
+### Convex quadratic form
+
+Optimization of the function described in Eq. 14 of https://arxiv.org/pdf/2406.16232v3
+
+Trajectories in the parameter space:
 ![image](examples/CQF_params.jpg)
+
+Trajectories in the value space:
 ![image](examples/CQF_values.jpg)
