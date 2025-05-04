@@ -18,6 +18,8 @@ uv run pre-commit install
 Note that here, "main" can be replaced with whatever ref (branch, tag or commit hash) of torchjd you
 want.
 
+Alternatively, you may want to install using the `uv.lock` file to reproduce an exact environment.
+
 You might also need some tex packages to be able to generate the plots (see
 https://stackoverflow.com/a/53080504)
 
