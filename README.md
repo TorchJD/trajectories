@@ -29,3 +29,8 @@ sudo apt-get install texlive-latex-extra texlive-fonts-recommended dvipng cm-sup
 
 ## Usage
 Please refer to the docstring of the scripts.
+
+## Examples
+
+![image](examples/EWQ_params.pdf)
+![image](examples/EWQ_values.pdf)
