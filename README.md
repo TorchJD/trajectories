@@ -32,5 +32,7 @@ Please refer to the docstring of the scripts.
 
 ## Examples
 
-![image](examples/EWQ_params.pdf)
-![image](examples/EWQ_values.pdf)
+![image](examples/EWQ_params.jpg)
+![image](examples/EWQ_values.jpg)
+![image](examples/CQF_params.jpg)
+![image](examples/CQF_values.jpg)
