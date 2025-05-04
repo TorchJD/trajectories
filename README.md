@@ -34,9 +34,7 @@ Please refer to the docstring of the scripts.
 
 ### Element-wise quadratic
 
-Optimization of the function
-$\mathbb f{\mathrm{EWQ}}(\mathbb x) = \begin{bmatrix} x_1^2 & x_2^2 \end{bmatrix}^\top$ by various
-aggregators.
+Optimization of the function f(x₁, x₂) = [x₁², x₂²]ᵀ by various aggregators.
 
 Trajectories in the parameter space:
 ![image](examples/EWQ_params.jpg)
