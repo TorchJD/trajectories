@@ -10,10 +10,7 @@ uv python pin 3.13.3
 ```
 
 ```bash
-uv venv
-CC=gcc uv pip install "git+ssh://git@github.com/TorchJD/torchjd.git@main[full]"
-uv pip install -e . --group check
-uv run pre-commit install
+./setup_env.sh main
 ```
 Note that here, "main" can be replaced with whatever ref (branch, tag or commit hash) of torchjd you
 want.
