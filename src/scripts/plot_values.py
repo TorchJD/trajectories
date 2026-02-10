@@ -17,7 +17,7 @@ import numpy as np
 import torch
 from docopt import docopt
 
-from trajectories.constants import LATEX_NAMES, N_SAMPLES_SPSM, OBJECTIVES, SUBPLOT_LOCATIONS
+from trajectories.constants import AGGREGATOR_ORDER, LATEX_NAMES, N_SAMPLES_SPSM, OBJECTIVES
 from trajectories.objectives import WithSPSMappingMixin
 from trajectories.optimization import compute_objectives_pf_distances
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
@@ -32,6 +32,12 @@ from trajectories.plotters import (
     XTicksClearer,
     YAxisLabeller,
     YTicksClearer,
+)
+from trajectories.plotting_utils import (
+    compute_subplot_layout,
+    get_subplot_position,
+    get_unused_subplot_positions,
+    map_orders_to_indices,
 )
 
 
@@ -96,14 +102,27 @@ def main():
             cmap="Reds",
         )
 
-    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+    n_aggregators = len(aggregator_keys)
+    n_rows, n_cols = compute_subplot_layout(n_aggregators)
+    key_to_index = map_orders_to_indices(aggregator_keys, AGGREGATOR_ORDER)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 2, n_rows * 2.5))
+    # Ensure axes is always 2D
+    if n_rows == 1:
+        axes = axes.reshape(1, -1)
+
+    # Hide unused subplots
+    unused_positions = get_unused_subplot_positions(n_aggregators, n_rows, n_cols)
+    for i, j in unused_positions:
+        axes[i][j].axis("off")
+
     save_path = value_plots_dir / "all.pdf"
 
     for aggregator_key, Y in aggregator_to_Y.items():
-        i, j = SUBPLOT_LOCATIONS[aggregator_key]
+        index = key_to_index[aggregator_key]
+        i, j = get_subplot_position(index, n_aggregators, n_rows, n_cols)
 
         plotter = common_plotter + MultiTrajPlotter(Y) + TitleSetter(LATEX_NAMES[aggregator_key])
-        plotter += XAxisLabeller("Objective $1$") if i == 1 else XTicksClearer()
+        plotter += XAxisLabeller("Objective $1$") if i == n_rows - 1 else XTicksClearer()
         plotter += YAxisLabeller("Objective $2$") if j == 0 else YTicksClearer()
 
         plotter(axes[i][j])

@@ -44,17 +44,17 @@ LR_MULTIPLIERS = {
     "random": 1.0,
     "mean": 1.0,
 }
-SUBPLOT_LOCATIONS = {
-    "upgrad": (1, 4),
-    "mgda": (0, 1),
-    "cagrad": (1, 0),
-    "nashmtl": (1, 2),
-    "graddrop": (0, 3),
-    "imtl_g": (0, 4),
-    "aligned_mtl": (1, 3),
-    "dualproj": (0, 2),
-    "random": (1, 1),
-    "mean": (0, 0),
+AGGREGATOR_ORDER = {
+    "upgrad": 9,
+    "mgda": 1,
+    "cagrad": 5,
+    "nashmtl": 7,
+    "graddrop": 3,
+    "imtl_g": 4,
+    "aligned_mtl": 8,
+    "dualproj": 2,
+    "random": 6,
+    "mean": 0,
     # No location for PCGrad as it's equivalent to UPGrad with 2 objectives
 }
 LATEX_NAMES = {
